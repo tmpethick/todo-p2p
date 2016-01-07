@@ -1,0 +1,51 @@
+{
+  "name": "turtlespace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "js/app.js",
+  "scripts": {
+    "start": "watchify -p livereactload -o js/bundle.js -v -d js/app.js",
+    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > js/bundle.min.js",
+    "broker": "node_modules/peer/bin/peerjs --port 9000 --key peerjs"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015",
+            "react"
+          ]
+        }
+      ],
+      "envify"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tmpethick/turtlespace.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tmpethick/turtlespace/issues"
+  },
+  "homepage": "https://github.com/tmpethick/turtlespace",
+  "dependencies": {
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "babelify": "^7.2.0",
+    "browserify": "^12.0.1",
+    "envify": "^3.4.0",
+    "peer": "^0.2.8",
+    "todomvc-app-css": "^2.0.3",
+    "todomvc-common": "^1.0.2",
+    "watchify": "^3.6.1"
+  },
+  "devDependencies": {
+    "babel-plugin-react-transform": "^2.0.0-beta1",
+    "livereactload": "^2.1.0",
+    "react-proxy": "^1.1.2"
+  }
+}
