@@ -124,9 +124,9 @@ require("./app.js", entryId$$);
     "id": 2,
     "index": 2,
     "file": "/Users/tmpethick/Business/Projects/turtlespace/js/app.js",
-    "source": "\"use strict\";\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJhcHAuanMiLCJzb3VyY2VzQ29udGVudCI6W119",
+    "source": "'use strict';\n\nvar peer = new Peer('someid', { host: 'localhost', port: 9000, path: '/' });\n\npeer.listAllPeers(function (peers) {\n  console.log(peers);\n});\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUNBLElBQUksSUFBSSxHQUFHLElBQUksSUFBSSxDQUFDLFFBQVEsRUFBRSxFQUFDLElBQUksRUFBRSxXQUFXLEVBQUUsSUFBSSxFQUFFLElBQUksRUFBRSxJQUFJLEVBQUUsR0FBRyxFQUFDLENBQUMsQ0FBQzs7QUFFMUUsSUFBSSxDQUFDLFlBQVksQ0FBQyxVQUFTLEtBQUssRUFBRTtBQUNoQyxTQUFPLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBQyxDQUFDO0NBQ3BCLENBQUMsQ0FBQSIsImZpbGUiOiJhcHAuanMiLCJzb3VyY2VzQ29udGVudCI6WyJcbnZhciBwZWVyID0gbmV3IFBlZXIoJ3NvbWVpZCcsIHtob3N0OiAnbG9jYWxob3N0JywgcG9ydDogOTAwMCwgcGF0aDogJy8nfSk7XG5cbnBlZXIubGlzdEFsbFBlZXJzKGZ1bmN0aW9uKHBlZXJzKSB7XG4gIGNvbnNvbGUubG9nKHBlZXJzKTtcbn0pIl19",
     "deps": {},
-    "hash": "8f2049acf624403916441c72e6e9b000"
+    "hash": "4c5ff7bef97a4cef19165935a9b1a85c"
   },
   "3": {
     "id": 3,

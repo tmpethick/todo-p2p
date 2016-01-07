@@ -6,7 +6,7 @@
   "scripts": {
     "start": "watchify -p livereactload -o js/bundle.js -v -d js/app.js",
     "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > js/bundle.min.js",
-    "broker": "node_modules/peer/bin/peerjs --port 9000 --key peerjs"
+    "broker": "node_modules/peer/bin/peerjs --port 9000 --key peerjs --allow_discovery"
   },
   "browserify": {
     "transform": [
