@@ -41,7 +41,9 @@
     "peer": "^0.2.8",
     "todomvc-app-css": "^2.0.3",
     "todomvc-common": "^1.0.2",
-    "watchify": "^3.6.1"
+    "uuid-js": "^0.7.5",
+    "watchify": "^3.6.1",
+    "yocto": "^0.1.0"
   },
   "devDependencies": {
     "babel-plugin-react-transform": "^2.0.0-beta1",
