@@ -9,6 +9,6 @@ export default class TupleSpace {
 ['put', 'get', 'take', 'each', 'drop', 'destroy', 'sort', 'save', 'load', 
  'observe', 'unobserve', 'status'].forEach((key) => {
     TupleSpace.prototype[key] = function() {
-      this.db[key].call(this.db, arguments);
+      return this.db[key].apply(this.db, arguments);
     };
  });

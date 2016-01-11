@@ -15,5 +15,5 @@ npm start
 ### Run P2P server:
 
 ```
-npm run-script broker
+npm run broker
 ```
