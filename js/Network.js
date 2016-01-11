@@ -98,38 +98,21 @@ export default class Network {
 	connectToPeer(peer) {
 	
 		var conn;
-		console.log(peer);		
-			if (!(peer in this.connectedPeers)) {
 
-			console.log("Backconnection: " + peer);
-	
-			conn = this.peer.connect(peer, {
-				label: 'backconnecting',
-		    serialization: 'none',
-		    metadata: {message: 'Hey there, sounds like a plan!'}
-			});
-			
-			conn.on('open', function() {
-				conn.send(conn.metadata.message);
-			});
-			conn.on('error', function(err) { alert(err); });
-			
-			this.connectedPeers[peer] = conn;
-		} else if (peer in this.connectedPeers && peer != this.peer.id) {
-			conn = this.peer.connect(peer, {
-				label: 'backconnecting',
-		    serialization: 'none',
-		    metadata: {message: 'Hey there, sounds like a plan!'}
-			});
-			
-			conn.on('open', function() {
-				conn.send(conn.metadata.message);
-			});
-			
-			conn.on('error', function(err) { alert(err); });
-			
-			this.connectedPeers[peer] = conn;
-		}
+		conn = this.peer.connect(peer, {
+			label: 'backconnecting',
+	    serialization: 'none',
+	    metadata: {message: 'Hey there, sounds like a plan!'}
+		});
+		
+		conn.on('open', function() {
+			conn.send(conn.metadata.message);
+		});
+		
+		conn.on('error', function(err) { alert(err); });
+		
+		this.connectedPeers[peer] = conn;
+		
   }
   
 /*
