@@ -85,6 +85,16 @@ export default class App extends React.Component {
 }
 
 class TodoItem extends React.Component {
+
+  constructor(props) {
+	  super();
+		this.state = {editTodoInput: '', editing: false};
+  }
+  
+  handleInputChange(event) {
+    this.setState({editTodoInput: event.target.value});
+  }
+
   toggleCompleted(event) {
     var newItem = this.props.todo.copy({
       isComplete: !this.props.todo.data.isComplete
@@ -92,18 +102,45 @@ class TodoItem extends React.Component {
     this.props.tupleSpace.put(newItem);
     this.props.network.sendTodo(newItem);
   }
+  
+  
+	changeEditField(event) {
+		this.setState({editing: !this.state.editing});
+		
+		if (!this.state.editing) {
+			var input = document.querySelector(".editing .edit").focus();
+		}
 
-  render() {
+  }
+  
+
+ /*
+ editCompleted(event) {
+    var newItem = this.props.todo.copy({
+      content: this.state.editTodoInput;
+    }).toTuple();
+    this.props.tupleSpace.put(newItem);
+    this.props.network.sendTodo(newItem);
+  }
+*/
+	render() {
     const {isComplete, content} = this.props.todo.data;
     return (
-      <li className={isComplete ? "completed" : ""}>
+      <li className={(this.state.editing ? 'editing' : '') + (isComplete ? " completed" : "")}>
         <div className="view">
           <input className="toggle" type="checkbox"
             onChange={this.toggleCompleted.bind(this)} 
             checked={isComplete} />
-          <label>{content}</label>
+          <label onDoubleClick={this.changeEditField.bind(this)}>{content}</label>
+          <button className="destroy"></button>
         </div>
-        <input className="edit" value="Create a TodoMVC template" />
+        <input 
+        	className="edit" 
+        	value={this.state.editTodoInput} 
+          onChange={this.handleInputChange.bind(this)} 
+          onBlur={this.changeEditField.bind(this)} 
+          ref="edit"
+        />
       </li>
     );
   }
