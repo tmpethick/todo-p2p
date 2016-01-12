@@ -135,6 +135,7 @@ class TodoItem extends React.Component {
     this.props.network.sendTodo(newItem);
   }
   
+  
   editCompleted(event) {
   	const content = this.state.editTodoInput;
     if (!content)
