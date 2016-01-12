@@ -119,10 +119,17 @@ class NewTodoInput extends React.Component {
 class TodoItem extends React.Component {
 
   constructor(props) {
-	  super();
-		this.state = {editTodoInput: props.todo.data.content, editing: false};
+    super();
+    this.state = {
+      editing: false, 
+      editTodoInput: props.todo.data.content
+    };
   }
-  
+
+  componentWillReceiveProps(nextProps) {
+		this.setState({editTodoInput: nextProps.todo.data.content});
+  }
+
   handleInputChange(event) {
     this.setState({editTodoInput: event.target.value});
   }
