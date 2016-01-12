@@ -5,10 +5,10 @@
   "main": "js/app.js",
   "scripts": {
     "start": "parallelshell 'npm run server' 'npm run watch'",
-    "watch": "watchify -p livereactload -o js/bundle.js -v -d js/app.js",
+    "watch": "watchify -p livereactload -o build/bundle.js -v -d js/app.js",
     "server": "http-server -p 3000",
     "broker": "peerjs --port 9000 --key peerjs --allow_discovery",
-    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > js/bundle.min.js"
+    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > build/bundle.min.js"
   },
   "browserify": {
     "transform": [
