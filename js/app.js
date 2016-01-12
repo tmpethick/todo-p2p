@@ -13,9 +13,7 @@ export default class App extends React.Component {
     this.state = {newTodoInput: ''};
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
-
-    this.network = new Network();
-    this.network.connectToPeers();
+		this.network = props.network;
   }
 
   handleInputChange(event) {
@@ -111,6 +109,9 @@ class TodoItem extends React.Component {
   }
 }
 
+var network = new Network();
+network.connectToPeers();
+
 var tupleSpace = new TupleSpace();
 tupleSpace.load();
 window.onunload = tupleSpace.save;
@@ -119,6 +120,6 @@ window.onunload = tupleSpace.save;
 window.tupleSpace = tupleSpace;
 
 ReactDOM.render(
-  <App tupleSpace={tupleSpace} />, 
+  <App tupleSpace={tupleSpace} network={network} />, 
   document.getElementById('app')
 );

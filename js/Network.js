@@ -33,17 +33,16 @@ export default class Network {
 					conn.label = "connected";
     		}
     		
-    		
-    		
     	});
     	
     });
+    
+    this.peer.on('disconnected', () => {
+			console.log("You have been disconnected from the server");
+		});
 
 		this.peer.on('close', () => {
-			console.log("bye close");
-			for (var key in this.connectedPeers) {
-				this.connectedPeers[key].send("Closed");
-			}
+			console.log("Your connection has been destroyed");
 		});
 		
 		// Når en forbinder til serveren
@@ -143,20 +142,6 @@ export default class Network {
  	  console.log("Size of callbacks: " + this.callbacks.length);
     this.callbacks.forEach(callback => callback());
   }
-/*
-  disconnect() {
-		for (var key in this.connectedPeers) {
-			this.peer.disconnect(this.connectedPeers[key].peer);
-			this.peer.on('disconnected', () => {
-			console.log("bye disconnect");
-			for (var key in this.connectedPeers) {
-				this.connectedPeers[key].send("Disconnected");
-			}		
-		});
-		}		
 
-  }
-*/
-  
 }
 
