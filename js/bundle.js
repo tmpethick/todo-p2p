@@ -1,0 +1,1 @@
+console.error("SyntaxError: /Users/sebastiannyholm/Documents/DTU/3. Semester/Distributed Systems/Todolist/js/app.js: Unexpected token (6:1) while parsing file: /Users/sebastiannyholm/Documents/DTU/3. Semester/Distributed Systems/Todolist/js/app.js");

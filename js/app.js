@@ -3,6 +3,7 @@ import TupleSpace from "./TupleSpace";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import UUID from 'uuid-js';
+<<<<<<< HEAD
 
 class TodoItem extends React.Component {
   toggleCompleted(event) {
@@ -30,6 +31,11 @@ class TodoItem extends React.Component {
   }
 
 }
+=======
+import yocto from 'yocto';
+import TodoItemModel from './model/TodoItem';
+import TodoListModel from './model/TodoList';
+>>>>>>> 8d21acb7f7dcb49472b8d5c85fb830a10ecee927
 
 export default class App extends React.Component {
 
@@ -37,6 +43,7 @@ export default class App extends React.Component {
     super();
     this.state = {newTodoInput: ''};
     this.tupleSpace = props.tupleSpace;
+<<<<<<< HEAD
     this.network = new Network(this.getUserID());
     this.network.connectToPeers();
 		
@@ -53,6 +60,9 @@ export default class App extends React.Component {
 		} else {
 			console.log("Sorry, your browser does not support web storage...");
 		}
+=======
+    this.todoList = new TodoListModel({}, this.tupleSpace);
+>>>>>>> 8d21acb7f7dcb49472b8d5c85fb830a10ecee927
   }
 
   handleInputChange(event) {
@@ -67,7 +77,13 @@ export default class App extends React.Component {
   createTodoItem(todoItem) {
     if (!todoItem.content)
       return;
+<<<<<<< HEAD
     this.tupleSpace.put(todoItem);
+=======
+    this.tupleSpace.put(TodoItemModel.create({
+      content: this.state.newTodoInput
+    }).toTuple());
+>>>>>>> 8d21acb7f7dcb49472b8d5c85fb830a10ecee927
 
     this.setState({newTodoInput: ''});
     
@@ -95,7 +111,7 @@ export default class App extends React.Component {
   }
 
   render() {
-    var items = this.tupleSpace.get({'type': 'todoItem'});
+    var items = this.todoList.getItems();
     return (
        <div>
         <section className="todoapp">
@@ -113,7 +129,7 @@ export default class App extends React.Component {
 
               {items.map(todo => (
                 <TodoItem tupleSpace={this.tupleSpace} 
-                  key={todo.id} {...todo} />
+                  key={todo.data.id} todo={todo} />
               ))}
 
             </ul>
@@ -158,7 +174,31 @@ export default class App extends React.Component {
 
 }
 
+class TodoItem extends React.Component {
+  toggleCompleted(event) {
+    this.props.tupleSpace.put(this.props.todo.copy({
+      isComplete: !this.props.todo.data.isComplete
+    }).toTuple());
+  }
+
+  render() {
+    const {isComplete, content} = this.props.todo.data;
+    return (
+      <li className={isComplete ? "completed" : ""}>
+        <div className="view">
+          <input className="toggle" type="checkbox"
+            onChange={this.toggleCompleted.bind(this)} 
+            checked={isComplete} />
+          <label>{content}</label>
+        </div>
+        <input className="edit" value="Create a TodoMVC template" />
+      </li>
+    );
+  }
+}
+
 var tupleSpace = new TupleSpace();
+<<<<<<< HEAD
 /*
 tupleSpace.put({
   'id': UUID.create().toString(),
@@ -175,6 +215,15 @@ tupleSpace.put({
 	'timestamp': new Date().getTime()
 });
 */
+=======
+tupleSpace.put(TodoItemModel.create({
+  'content': 'Gøgl',
+  'isComplete': true
+}).toTuple());
+tupleSpace.put(TodoItemModel.create({
+  'content': 'Gøgl'
+}).toTuple());
+>>>>>>> 8d21acb7f7dcb49472b8d5c85fb830a10ecee927
 
 window.tupleSpace = tupleSpace;
 ReactDOM.render(
