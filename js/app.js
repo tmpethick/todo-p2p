@@ -40,7 +40,7 @@ export default class App extends React.Component {
   }
 
   sortTodoList() {
-    return this.todoList.getItems().sort((a, b) => a.data.timestamp - b.data.timestamp);
+    return this.todoList.getItems().sort((a, b) =>  b.data.timestamp - a.data.timestamp);
   }
 
   handleKeyDown(event) {
