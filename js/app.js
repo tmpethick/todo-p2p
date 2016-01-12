@@ -40,7 +40,8 @@ export default class App extends React.Component {
   }
 
   sortTodoList() {
-    return this.todoList.getItems().sort((a, b) =>  b.data.timestamp - a.data.timestamp);
+    return this.todoList.getItems().sort(
+      (a, b) =>  b.data.creationDate - a.data.creationDate);
   }
 
   handleKeyDown(event) {
@@ -50,8 +51,7 @@ export default class App extends React.Component {
   }
 
   render() {
-    var items = this.todoList.getItems();
-    items = this.sortTodoList();
+    var items = this.sortTodoList();
     return (
        <div>
         <section className="todoapp">
@@ -90,9 +90,10 @@ export default class App extends React.Component {
 }
 
 class TodoItem extends React.Component {
+
   toggleCompleted(event) {
     var newItem = this.props.todo.copy({
-      isComplete: !this.props.todo.data.isComplete
+      isComplete: !this.props.todo.data.isComplete,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
     this.props.network.sendTodo(newItem);
