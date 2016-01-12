@@ -104,7 +104,7 @@ class TodoItem extends React.Component {
 
   constructor(props) {
 	  super();
-		this.state = {editTodoInput: '', editing: false};
+		this.state = {editTodoInput: props.todo.data.content, editing: false};
   }
   
   handleInputChange(event) {
@@ -119,28 +119,37 @@ class TodoItem extends React.Component {
     this.props.network.sendTodo(newItem);
   }
   
+  editCompleted(event) {
+  	const content = this.state.editTodoInput;
+    if (!content)
+      return;
+      
+    var newItem = this.props.todo.copy({
+      content: content,
+    }).toTuple();
+    this.props.tupleSpace.put(newItem);
+    this.props.network.sendTodo(newItem);
+  }
   
-	focusEditField = (event) => {
+	focusEditField(event) {
     this.setState({editing: true});
     setTimeout(() => {
       ReactDOM.findDOMNode(this.refs.edit).focus();
     });
   };
 
-  blurEditField = (event) => {
+  blurEditField(event) {
     this.setState({editing: false});
+    this.editCompleted();
   };
   
-
- /*
- editCompleted(event) {
-    var newItem = this.props.todo.copy({
-      content: this.state.editTodoInput;
-    }).toTuple();
-    this.props.tupleSpace.put(newItem);
-    this.props.network.sendTodo(newItem);
+  
+  handleKeyDown(event) {
+    if (event.keyCode == 13) {
+	    this.blurEditField();
+    }
   }
-*/
+
 	render() {
     const {isComplete, content} = this.props.todo.data;
     return (
@@ -149,16 +158,16 @@ class TodoItem extends React.Component {
           <input className="toggle" type="checkbox"
             onChange={this.toggleCompleted.bind(this)} 
             checked={isComplete} />
-          <label onDoubleClick={this.focusEditField}>{content}</label>
+          <label onDoubleClick={this.focusEditField.bind(this)}>{content}</label>
           <button className="destroy"></button>
         </div>
         <input 
         	className="edit" 
         	value={this.state.editTodoInput} 
           onChange={this.handleInputChange.bind(this)} 
-          onBlur={this.blurEditField} 
-          ref="edit"
-        />
+          onBlur={this.blurEditField.bind(this)} 
+					onKeyDown={this.handleKeyDown.bind(this)} 
+					ref="edit" />
       </li>
     );
   }
