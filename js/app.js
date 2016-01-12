@@ -147,6 +147,14 @@ class TodoItem extends React.Component {
     this.props.network.sendTodo(newItem);
   }
   
+  removeCompleted(event) {
+    var newItem = this.props.todo.copy({
+      isRemoved: true,
+    }).toTuple();
+    this.props.tupleSpace.put(newItem);
+    this.props.network.sendTodo(newItem);
+  }
+  
 	focusEditField(event) {
     this.setState({editing: true});
     setTimeout(() => {
@@ -167,15 +175,15 @@ class TodoItem extends React.Component {
   }
 
 	render() {
-    const {isComplete, content} = this.props.todo.data;
+    const {isComplete, isRemoved, content} = this.props.todo.data;
     return (
-      <li className={(this.state.editing ? 'editing' : '') + (isComplete ? " completed" : "")}>
+      <li className={(this.state.editing ? 'editing' : '') + (isComplete ? " completed" : "")  + (isRemoved ? " removed" : "")}>
         <div className="view">
           <input className="toggle" type="checkbox"
             onChange={this.toggleCompleted.bind(this)} 
             checked={isComplete} />
           <label onDoubleClick={this.focusEditField.bind(this)}>{content}</label>
-          <button className="destroy"></button>
+          <button className="destroy" onClick={this.removeCompleted.bind(this)}></button>
         </div>
         <input 
         	className="edit" 

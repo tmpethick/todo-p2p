@@ -5,7 +5,7 @@ export default class Network {
 
   constructor(userID) {
   
-    this.peer = new Peer(this.getUserID(), {host: 'localhost', port: 9000, path: '/'});
+    this.peer = new Peer(this.getUserID(), {host: '10.16.173.36', port: 9000, path: '/'});
 
 		this.connectedPeers = {};
 

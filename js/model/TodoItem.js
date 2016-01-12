@@ -4,6 +4,7 @@ export default class TodoItem extends Tuple {
   constructor(data) {
     data = Object.assign({
       'isComplete': false,
+      'isRemoved': false,
       creationDate: new Date().getTime()
     }, data);
     super(data);
@@ -16,7 +17,7 @@ export default class TodoItem extends Tuple {
       timestamp: new Date().getTime(),
       creationDate: this.data.creationDate
     }));
-    console.log(this.data.creationDate)
+    console.log("Creation date: " + this.data.creationDate)
     return todo;
   }
 
