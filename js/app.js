@@ -50,6 +50,11 @@ export default class App extends React.Component {
     }
   }
 
+  clearLocalStorage = (event) => {
+    this.tupleSpace.reset();
+    event.preventDefault();
+  };
+
   render() {
     var items = this.sortTodoList();
     return (
@@ -74,7 +79,13 @@ export default class App extends React.Component {
 
             </ul>
           </section>
-          <footer className="footer"></footer>
+          <footer className="footer">
+            <ul className="filters">
+              <li>
+                <a href="#" onClick={this.clearLocalStorage}>Clear localStorage</a>
+              </li>
+            </ul>
+          </footer>
         </section>
        </div>
     );

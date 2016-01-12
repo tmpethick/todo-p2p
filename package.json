@@ -4,9 +4,11 @@
   "description": "",
   "main": "js/app.js",
   "scripts": {
-    "start": "watchify -p livereactload -o js/bundle.js -v -d js/app.js",
-    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > js/bundle.min.js",
-    "broker": "peerjs --port 9000 --key peerjs --allow_discovery"
+    "start": "parallelshell 'npm run server' 'npm run watch'",
+    "watch": "watchify -p livereactload -o js/bundle.js -v -d js/app.js",
+    "server": "http-server -p 3000",
+    "broker": "peerjs --port 9000 --key peerjs --allow_discovery",
+    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > js/bundle.min.js"
   },
   "browserify": {
     "transform": [
@@ -53,6 +55,7 @@
   "devDependencies": {
     "babel-plugin-react-transform": "^2.0.0-beta1",
     "livereactload": "^2.1.0",
+    "parallelshell": "^2.0.0",
     "react-proxy": "^1.1.2"
   }
 }
