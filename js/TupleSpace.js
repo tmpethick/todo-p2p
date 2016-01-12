@@ -41,16 +41,16 @@ export default class TupleSpace {
   }
 
   load = () => {
-    if (!window.localStorage)
+    if(typeof(Storage) === "undefined")
       return;
-    const store = window.localStorage.getItem(TupleSpace.LOCAL_STORAGE_ID);
-    this.data = JSON.parse(store);
+    const store = localStorage.getItem(TupleSpace.LOCAL_STORAGE_ID);
+    this.data = JSON.parse(store) || {};
   };
 
   save = () => {
-    if (!window.localStorage)
+    if(typeof(Storage) === "undefined")
       return;
-    window.localStorage.setItem(
+    localStorage.setItem(
       TupleSpace.LOCAL_STORAGE_ID, 
       JSON.stringify(this.data)
     )

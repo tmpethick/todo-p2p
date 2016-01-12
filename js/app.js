@@ -83,21 +83,6 @@ export default class App extends React.Component {
 	  
     this.tupleSpace.put(TodoItemModel.create(todoItem).toTuple());
   }
-	
-	getLatestTupleSpaceFromLocalStorage() {
-		console.log("Henter seneste lokale tuple");
-		var tupleSpace;
-		if(typeof(Storage) !== "undefined") {
-			if (localStorage.tupleSpace) {
-				 tupleSpace = JSON.parse(localStorage.tupleSpace);
-				 for (let key in tupleSpace.data) {
-					 this.createTodoItem(creetupleSpace.data[key]);
-				 }
-			}
-		} else {
-			console.log("Sorry, your browser does not support web storage...");
-		}
-	}
 
 }
 
