@@ -16,20 +16,6 @@ export default class App extends React.Component {
 
     this.network = new Network();
     this.network.connectToPeers();
-    
-    console.log("Henter lokal storage");
-    if(typeof(Storage) !== "undefined") {
-      if (localStorage.tupleSpace) {
-        console.log(localStorage.tupleSpace);
-         let tuples = JSON.parse(localStorage.tupleSpace);
-         for (let key in tuples.data) {
-           console.log(tuples.data[key][0].content);
-           this.tupleSpace.put(tuples.data[key][0]);
-         }
-      }
-    } else {
-      console.log("Sorry, your browser does not support web storage...");
-    }
   }
 
   handleInputChange(event) {
@@ -52,14 +38,7 @@ export default class App extends React.Component {
     
     this.network.sendTodo(todoItem.toTuple());
 
-    this.setState({newTodoInput: ''});
-    
-    if(typeof(Storage) !== "undefined") {
-      localStorage.tupleSpace = JSON.stringify(this.tupleSpace);
-      console.log(localStorage.tupleSpace);
-    } else {
-      console.log("Sorry, your browser does not support web storage...");
-    }
+    this.setState({newTodoInput: ''});    
   }
 
   handleKeyDown(event) {
@@ -148,8 +127,12 @@ class TodoItem extends React.Component {
 }
 
 var tupleSpace = new TupleSpace();
+tupleSpace.load();
+window.onunload = tupleSpace.save;
 
+// for testing
 window.tupleSpace = tupleSpace;
+
 ReactDOM.render(
   <App tupleSpace={tupleSpace} />, 
   document.getElementById('app')

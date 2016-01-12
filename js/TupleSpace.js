@@ -1,5 +1,7 @@
 
 export default class TupleSpace {
+  static LOCAL_STORAGE_ID = 'tupleSpace';
+
   constructor() {
     this.data = {};
     this.callbacks = [];
@@ -37,5 +39,21 @@ export default class TupleSpace {
   callCallbacks() {
     this.callbacks.forEach(callback => callback());
   }
+
+  load = () => {
+    if (!window.localStorage)
+      return;
+    const store = window.localStorage.getItem(TupleSpace.LOCAL_STORAGE_ID);
+    this.data = JSON.stringify(store);
+  };
+
+  save = () => {
+    if (!window.localStorage)
+      return;
+    window.localStorage.setItem(
+      TupleSpace.LOCAL_STORAGE_ID, 
+      JSON.stringify(this.data)
+    )
+  };
 
 }
