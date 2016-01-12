@@ -87,7 +87,7 @@ export default class App extends React.Component {
 
               {items.map(todo => (
                 <TodoItem tupleSpace={this.tupleSpace} 
-                  key={todo.data.id} todo={todo} />
+                  key={todo.data.id} todo={todo} network={this.network} />
               ))}
 
             </ul>
@@ -135,9 +135,11 @@ export default class App extends React.Component {
 
 class TodoItem extends React.Component {
   toggleCompleted(event) {
-    this.props.tupleSpace.put(this.props.todo.copy({
+    var newItem = this.props.todo.copy({
       isComplete: !this.props.todo.data.isComplete
-    }).toTuple());
+    }).toTuple();
+    this.props.tupleSpace.put(newItem);
+    this.props.network.sendTodo(newItem);
   }
 
   render() {
