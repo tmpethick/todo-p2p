@@ -5,7 +5,7 @@ export default class Network {
 
   constructor(userID) {
   
-    this.peer = new Peer(userID, {host: '10.16.173.36', port: 9000, path: '/'});
+    this.peer = new Peer(this.getUserID(), {host: '10.16.173.36', port: 9000, path: '/'});
 
 		this.connectedPeers = {};
 
@@ -33,17 +33,16 @@ export default class Network {
 					conn.label = "connected";
     		}
     		
-    		
-    		
     	});
     	
     });
+    
+    this.peer.on('disconnected', () => {
+			console.log("You have been disconnected from the server");
+		});
 
 		this.peer.on('close', () => {
-			console.log("bye close");
-			for (var key in this.connectedPeers) {
-				this.connectedPeers[key].send("Closed");
-			}
+			console.log("Your connection has been destroyed");
 		});
 		
 		// Når en forbinder til serveren
@@ -111,6 +110,17 @@ export default class Network {
 		this.connectedPeers[peer] = conn;
 		
   }
+  
+   getUserID() {
+		if(typeof(Storage) !== "undefined") {
+			if (!localStorage.uuid) {
+				localStorage.uuid = UUID.create().toString();
+			}
+			return localStorage.uuid;
+		} else {
+			console.log("Sorry, your browser does not support web storage...");
+    }
+	}
 
 	sendTodo(todoItem) {
 		var jsonString = JSON.stringify(todoItem);
@@ -132,20 +142,6 @@ export default class Network {
  	  console.log("Size of callbacks: " + this.callbacks.length);
     this.callbacks.forEach(callback => callback());
   }
-/*
-  disconnect() {
-		for (var key in this.connectedPeers) {
-			this.peer.disconnect(this.connectedPeers[key].peer);
-			this.peer.on('disconnected', () => {
-			console.log("bye disconnect");
-			for (var key in this.connectedPeers) {
-				this.connectedPeers[key].send("Disconnected");
-			}		
-		});
-		}		
 
-  }
-*/
-  
 }
 

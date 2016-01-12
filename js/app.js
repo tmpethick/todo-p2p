@@ -13,23 +13,7 @@ export default class App extends React.Component {
     this.state = {newTodoInput: ''};
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
-
-    this.network = new Network(this.getUserID());
-    this.network.connectToPeers();
-    
-    console.log("Henter lokal storage");
-    if(typeof(Storage) !== "undefined") {
-      if (localStorage.tupleSpace) {
-        console.log(localStorage.tupleSpace);
-         let tuples = JSON.parse(localStorage.tupleSpace);
-         for (let key in tuples.data) {
-           console.log(tuples.data[key][0].content);
-           this.tupleSpace.put(tuples.data[key][0]);
-         }
-      }
-    } else {
-      console.log("Sorry, your browser does not support web storage...");
-    }
+		this.network = props.network;
   }
 
   handleInputChange(event) {
@@ -52,14 +36,7 @@ export default class App extends React.Component {
     
     this.network.sendTodo(todoItem.toTuple());
 
-    this.setState({newTodoInput: ''});
-    
-    if(typeof(Storage) !== "undefined") {
-      localStorage.tupleSpace = JSON.stringify(this.tupleSpace);
-      console.log(localStorage.tupleSpace);
-    } else {
-      console.log("Sorry, your browser does not support web storage...");
-    }
+    this.setState({newTodoInput: ''});    
   }
 
   sortTodoList() {
@@ -109,32 +86,6 @@ export default class App extends React.Component {
 	  
     this.tupleSpace.put(TodoItemModel.create(todoItem).toTuple());
   }
-  
-  getUserID() {
-		if(typeof(Storage) !== "undefined") {
-			if (!localStorage.uuid) {
-				localStorage.uuid = UUID.create().toString();
-			}
-			return localStorage.uuid;
-		} else {
-			console.log("Sorry, your browser does not support web storage...");
-    }
-	}
-	
-	getLatestTupleSpaceFromLocalStorage() {
-		console.log("Henter seneste lokale tuple");
-		var tupleSpace;
-		if(typeof(Storage) !== "undefined") {
-			if (localStorage.tupleSpace) {
-				 tupleSpace = JSON.parse(localStorage.tupleSpace);
-				 for (let key in tupleSpace.data) {
-					 this.createTodoItem(creetupleSpace.data[key]);
-				 }
-			}
-		} else {
-			console.log("Sorry, your browser does not support web storage...");
-		}
-	}
 
 }
 
@@ -163,10 +114,17 @@ class TodoItem extends React.Component {
   }
 }
 
-var tupleSpace = new TupleSpace();
+var network = new Network();
+network.connectToPeers();
 
+var tupleSpace = new TupleSpace();
+tupleSpace.load();
+window.onunload = tupleSpace.save;
+
+// for testing
 window.tupleSpace = tupleSpace;
+
 ReactDOM.render(
-  <App tupleSpace={tupleSpace} />, 
+  <App tupleSpace={tupleSpace} network={network} />, 
   document.getElementById('app')
 );
