@@ -1,17 +1,6 @@
 import Peer from 'peerjs';
 import UUID from 'uuid-js';
 
-function getUserID() {
-	if(typeof(Storage) !== "undefined") {
-		if (!localStorage.uuid) {
-			localStorage.uuid = UUID.create().toString();
-		}
-		return localStorage.uuid;
-	} else {
-        document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
-    }
-}
-
 export default class Network {
 
   constructor(userID) {
@@ -19,24 +8,32 @@ export default class Network {
     this.peer = new Peer(userID, {host: 'localhost', port: 9000, path: '/'});
 
 		this.connectedPeers = {};
-		
+
+		this.todoItem;
+		this.callbacks = [];
 
 		// Hvad der skal ske, når en opretter forbindelse i mellem to peers
     this.peer.on("connection", (conn) => {
     	conn.on("data", (data) => {
-    		if (conn.label == "connecting") {
+    	
+	    	if (conn.label == "connected") {
+	    		data.replace('"', '\"');
+					this.todoItem = JSON.parse(data);
+	    		this.callCallbacks();	
+	    		console.log("Todoitem " + this.todoItem.content + " recieved");
+    		} else if (conn.label == "connecting") {
 		    	console.log("Peer trying to connect to you: " + conn.peer);
 					this.connectToPeer(conn.peer);
 					this.listAllConnectedPeers();
-    		}
-    		
-    		if (conn.label == "backconnecting") {
+					conn.label = "connected";
+    		} else if (conn.label == "backconnecting") {
 		    	console.log("Peer has responded you: " + conn.peer);
 					this.listAllConnectedPeers();
 	    		console.log("Connection established");
+					conn.label = "connected";
     		}
     		
-    		console.log(data);
+    		
     		
     	});
     	
@@ -46,7 +43,7 @@ export default class Network {
 			console.log("bye close");
 			for (var key in this.connectedPeers) {
 				this.connectedPeers[key].send("Closed");
-			}		
+			}
 		});
 		
 		// Når en forbinder til serveren
@@ -114,7 +111,27 @@ export default class Network {
 		this.connectedPeers[peer] = conn;
 		
   }
+
+	sendTodo(todoItem) {
+		var jsonString = JSON.stringify(todoItem);
+		for (var key in this.connectedPeers) {
+			console.log("Todoitem " + todoItem.content + " send");
+			this.connectedPeers[key].send(jsonString);
+		}	
+	}
+	
+	getTodoItem() {
+		return this.todoItem;
+	}
   
+  observe(callback) {
+    this.callbacks.push(callback);
+  }
+  
+  callCallbacks() {
+ 	  console.log("Size of callbacks: " + this.callbacks.length);
+    this.callbacks.forEach(callback => callback());
+  }
 /*
   disconnect() {
 		for (var key in this.connectedPeers) {
@@ -132,10 +149,3 @@ export default class Network {
   
 }
 
-var userID = getUserID();
-
-var network = new Network(userID);
-
-network.connectToPeers();
-
-//network.disconnect();

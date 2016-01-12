@@ -3,7 +3,6 @@ import TupleSpace from "./TupleSpace";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import UUID from 'uuid-js';
-import yocto from 'yocto';
 
 class TodoItem extends React.Component {
   toggleCompleted(event) {
@@ -38,6 +37,22 @@ export default class App extends React.Component {
     super();
     this.state = {newTodoInput: ''};
     this.tupleSpace = props.tupleSpace;
+    this.network = new Network(this.getUserID());
+    this.network.connectToPeers();
+		
+		console.log("Henter lokal storage");
+		if(typeof(Storage) !== "undefined") {
+			if (localStorage.tupleSpace) {
+				console.log(localStorage.tupleSpace);
+				 let tuples = JSON.parse(localStorage.tupleSpace);
+				 for (let key in tuples.data) {
+					 console.log(tuples.data[key][0].content);
+					 this.createTodoItem(tuples.data[key][0]);
+				 }
+			}
+		} else {
+			console.log("Sorry, your browser does not support web storage...");
+		}
   }
 
   handleInputChange(event) {
@@ -46,25 +61,37 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.tupleSpace.observe(this.forceUpdate.bind(this));
+    this.network.observe(this.getTodoItemFromNetwork.bind(this));
   }
 
-  createTodoItem() {
-    if (!this.state.newTodoInput)
+  createTodoItem(todoItem) {
+    if (!todoItem.content)
       return;
-    this.tupleSpace.put({
-      content: this.state.newTodoInput,
-      isComplete: false,
-      type: 'todoItem',
-      id: UUID.create().toString(),
-      timestamp: new Date().getTime()
-    });
+    this.tupleSpace.put(todoItem);
 
     this.setState({newTodoInput: ''});
+    
+    if(typeof(Storage) !== "undefined") {
+			localStorage.tupleSpace = JSON.stringify(this.tupleSpace);
+			console.log(localStorage.tupleSpace);
+		} else {
+			console.log("Sorry, your browser does not support web storage...");
+		}
   }
 
   handleKeyDown(event) {
-    if (event.keyCode == 13)
-      this.createTodoItem();
+    if (event.keyCode == 13) {
+	    var todoItem = {
+									      content: this.state.newTodoInput,
+									      isComplete: false,
+									      type: 'todoItem',
+									      id: UUID.create().toString(),
+									      timestamp: new Date().getTime()
+									    };
+	    this.createTodoItem(todoItem);
+			this.network.sendTodo(todoItem);
+    }
+      
   }
 
   render() {
@@ -96,21 +123,58 @@ export default class App extends React.Component {
        </div>
     );
   }
+  
+  getTodoItemFromNetwork() {
+	  var todoItem = this.network.getTodoItem();
+	  console.log("Returned " + todoItem.content + ", id: " + todoItem.id);
+	  this.createTodoItem(todoItem);
+  }
+  
+  getUserID() {
+		if(typeof(Storage) !== "undefined") {
+			if (!localStorage.uuid) {
+				localStorage.uuid = UUID.create().toString();
+			}
+			return localStorage.uuid;
+		} else {
+			console.log("Sorry, your browser does not support web storage...");
+    }
+	}
+	
+	getLatestTupleSpaceFromLocalStorage() {
+		console.log("Henter seneste lokale tuple");
+		var tupleSpace;
+		if(typeof(Storage) !== "undefined") {
+			if (localStorage.tupleSpace) {
+				 tupleSpace = JSON.parse(localStorage.tupleSpace);
+				 for (let key in tupleSpace.data) {
+					 this.createTodoItem(creetupleSpace.data[key]);
+				 }
+			}
+		} else {
+			console.log("Sorry, your browser does not support web storage...");
+		}
+	}
+
 }
 
 var tupleSpace = new TupleSpace();
+/*
 tupleSpace.put({
   'id': UUID.create().toString(),
   'type': 'todoItem',
   'content': 'Gøgl',
-  'isComplete': true
+  'isComplete': true,
+	'timestamp': new Date().getTime()
 });
 tupleSpace.put({
   'id': UUID.create().toString(),
   'type': 'todoItem',
   'content': 'Gøgl',
-  'isComplete': false
+  'isComplete': false,
+	'timestamp': new Date().getTime()
 });
+*/
 
 window.tupleSpace = tupleSpace;
 ReactDOM.render(
