@@ -14,7 +14,7 @@ export default class App extends React.Component {
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
 
-    this.network = new Network(this.getUserID());
+    this.network = new Network();
     this.network.connectToPeers();
     
     console.log("Henter lokal storage");
@@ -104,17 +104,6 @@ export default class App extends React.Component {
 	  
     this.tupleSpace.put(TodoItemModel.create(todoItem).toTuple());
   }
-  
-  getUserID() {
-		if(typeof(Storage) !== "undefined") {
-			if (!localStorage.uuid) {
-				localStorage.uuid = UUID.create().toString();
-			}
-			return localStorage.uuid;
-		} else {
-			console.log("Sorry, your browser does not support web storage...");
-    }
-	}
 	
 	getLatestTupleSpaceFromLocalStorage() {
 		console.log("Henter seneste lokale tuple");

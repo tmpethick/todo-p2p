@@ -5,7 +5,7 @@ export default class Network {
 
   constructor(userID) {
   
-    this.peer = new Peer(userID, {host: '10.16.173.36', port: 9000, path: '/'});
+    this.peer = new Peer(this.getUserID(), {host: '10.16.173.36', port: 9000, path: '/'});
 
 		this.connectedPeers = {};
 
@@ -111,6 +111,17 @@ export default class Network {
 		this.connectedPeers[peer] = conn;
 		
   }
+  
+   getUserID() {
+		if(typeof(Storage) !== "undefined") {
+			if (!localStorage.uuid) {
+				localStorage.uuid = UUID.create().toString();
+			}
+			return localStorage.uuid;
+		} else {
+			console.log("Sorry, your browser does not support web storage...");
+    }
+	}
 
 	sendTodo(todoItem) {
 		var jsonString = JSON.stringify(todoItem);
