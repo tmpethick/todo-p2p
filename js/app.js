@@ -10,14 +10,9 @@ export default class App extends React.Component {
 
   constructor(props) {
     super();
-    this.state = {newTodoInput: ''};
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
 		this.network = props.network;
-  }
-
-  handleInputChange(event) {
-    this.setState({newTodoInput: event.target.value});
   }
 
   componentDidMount() {
@@ -25,30 +20,11 @@ export default class App extends React.Component {
     this.network.observe(this.getTodoItemFromNetwork.bind(this));
   }
 
-  createTodoItem() {
-    const content = this.state.newTodoInput;
-    if (!content)
-      return;
-		
-    const todoItem = TodoItemModel.create({content: content});
-
-    this.tupleSpace.put(todoItem.toTuple());
-    
-    this.network.sendTodo(todoItem.toTuple());
-
-    this.setState({newTodoInput: ''});    
-  }
-
   sortTodoList() {
     return this.todoList.getItems().sort(
       (a, b) =>  b.data.creationDate - a.data.creationDate);
   }
 
-  handleKeyDown(event) {
-    if (event.keyCode == 13) {
-      this.createTodoItem();
-    }
-  }
 
   clearLocalStorage = (event) => {
     this.tupleSpace.reset();
@@ -62,11 +38,7 @@ export default class App extends React.Component {
         <section className="todoapp">
           <header className="header">
             <h1>todos</h1>
-            <input className="new-todo" 
-              value={this.state.newTodoInput}
-              onChange={this.handleInputChange.bind(this)}
-              placeholder="What needs to be done?"
-              onKeyDown={this.handleKeyDown.bind(this)} />
+            <NewTodoInput tupleSpace={this.tupleSpace} network={this.network} />
           </header>
 
           <section className="main">
@@ -99,6 +71,50 @@ export default class App extends React.Component {
   }
 
 }
+
+class NewTodoInput extends React.Component {
+
+  constructor(props) {
+    super();
+    this.tupleSpace = props.tupleSpace;
+    this.state = {newTodoInput: ''};
+  }
+
+  handleInputChange(event) {
+    this.setState({newTodoInput: event.target.value});
+  }
+
+  createTodoItem() {
+    const content = this.state.newTodoInput;
+    if (!content)
+      return;
+    
+    const todoItem = TodoItemModel.create({content: content});
+
+    this.tupleSpace.put(todoItem.toTuple());
+    
+    this.props.network.sendTodo(todoItem.toTuple());
+
+    this.setState({newTodoInput: ''});    
+  }
+
+  handleKeyDown(event) {
+    if (event.keyCode == 13) {
+      this.createTodoItem();
+    }
+  }
+
+  render() {
+    return (
+      <input className="new-todo" 
+        value={this.state.newTodoInput}
+        onChange={this.handleInputChange.bind(this)}
+        placeholder="What needs to be done?"
+        onKeyDown={this.handleKeyDown.bind(this)} />
+    );
+  }
+}
+
 
 class TodoItem extends React.Component {
 
