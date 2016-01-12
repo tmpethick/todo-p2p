@@ -120,14 +120,16 @@ class TodoItem extends React.Component {
   }
   
   
-	changeEditField(event) {
-		this.setState({editing: !this.state.editing});
-		
-		if (!this.state.editing) {
-			var input = document.querySelector(".editing .edit").focus();
-		}
+	focusEditField = (event) => {
+    this.setState({editing: true});
+    setTimeout(() => {
+      ReactDOM.findDOMNode(this.refs.edit).focus();
+    });
+  };
 
-  }
+  blurEditField = (event) => {
+    this.setState({editing: false});
+  };
   
 
  /*
@@ -147,14 +149,14 @@ class TodoItem extends React.Component {
           <input className="toggle" type="checkbox"
             onChange={this.toggleCompleted.bind(this)} 
             checked={isComplete} />
-          <label onDoubleClick={this.changeEditField.bind(this)}>{content}</label>
+          <label onDoubleClick={this.focusEditField}>{content}</label>
           <button className="destroy"></button>
         </div>
         <input 
         	className="edit" 
         	value={this.state.editTodoInput} 
           onChange={this.handleInputChange.bind(this)} 
-          onBlur={this.changeEditField.bind(this)} 
+          onBlur={this.blurEditField} 
           ref="edit"
         />
       </li>
