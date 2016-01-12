@@ -39,14 +39,24 @@ export default class App extends React.Component {
     this.setState({newTodoInput: ''});    
   }
 
+  sortTodoList() {
+    return this.todoList.getItems().sort(
+      (a, b) =>  b.data.creationDate - a.data.creationDate);
+  }
+
   handleKeyDown(event) {
     if (event.keyCode == 13) {
       this.createTodoItem();
     }
   }
 
+  clearLocalStorage = (event) => {
+    this.tupleSpace.reset();
+    event.preventDefault();
+  };
+
   render() {
-    var items = this.todoList.getItems();
+    var items = this.sortTodoList();
     return (
        <div>
         <section className="todoapp">
@@ -69,7 +79,13 @@ export default class App extends React.Component {
 
             </ul>
           </section>
-          <footer className="footer"></footer>
+          <footer className="footer">
+            <ul className="filters">
+              <li>
+                <a href="#" onClick={this.clearLocalStorage}>Clear localStorage</a>
+              </li>
+            </ul>
+          </footer>
         </section>
        </div>
     );
@@ -97,7 +113,7 @@ class TodoItem extends React.Component {
 
   toggleCompleted(event) {
     var newItem = this.props.todo.copy({
-      isComplete: !this.props.todo.data.isComplete
+      isComplete: !this.props.todo.data.isComplete,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
     this.props.network.sendTodo(newItem);

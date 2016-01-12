@@ -10,7 +10,8 @@ export default class TupleSpace {
   get(template) {
     return Object.keys(this.data).filter(key => {
       // Match against the first element in the uuid list
-      let item = this.data[key][0];
+      let itemHistory = this.data[key];
+      let item = itemHistory[itemHistory.length-1];
 
       for (let key in Object.keys(template)) {
         if (template[key] !== item[key]) 
@@ -55,5 +56,11 @@ export default class TupleSpace {
       JSON.stringify(this.data)
     )
   };
+
+  reset() {
+    localStorage.removeItem(TupleSpace.LOCAL_STORAGE_ID);
+    this.data = {};
+    this.callCallbacks();
+  }
 
 }
