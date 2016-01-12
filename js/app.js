@@ -62,6 +62,10 @@ export default class App extends React.Component {
     }
   }
 
+  sortTodoList() {
+    return this.todoList.getItems().sort((a, b) => a.data.timestamp - b.data.timestamp);
+  }
+
   handleKeyDown(event) {
     if (event.keyCode == 13) {
       this.createTodoItem();
@@ -70,6 +74,7 @@ export default class App extends React.Component {
 
   render() {
     var items = this.todoList.getItems();
+    items = this.sortTodoList();
     return (
        <div>
         <section className="todoapp">
