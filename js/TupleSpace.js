@@ -44,7 +44,7 @@ export default class TupleSpace {
     if (!window.localStorage)
       return;
     const store = window.localStorage.getItem(TupleSpace.LOCAL_STORAGE_ID);
-    this.data = JSON.stringify(store);
+    this.data = JSON.parse(store);
   };
 
   save = () => {
