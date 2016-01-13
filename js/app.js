@@ -16,6 +16,8 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.tupleSpace.observe(this.forceUpdate.bind(this));
+    this.props.onReady();
+    console.log("!!!!!!");
   }
 
   sortTodoList() {
@@ -210,10 +212,13 @@ var tupleSpace = new TupleSpace(network);
 tupleSpace.load();
 window.onunload = tupleSpace.save;
 
+// Make sure network is only joined when interface is ready
+const start = () => network.join();
+
 // for testing
 window.tupleSpace = tupleSpace;
 
 ReactDOM.render(
-  <App tupleSpace={tupleSpace} />, 
+  <App tupleSpace={tupleSpace} onReady={start} />, 
   document.getElementById('app')
 );

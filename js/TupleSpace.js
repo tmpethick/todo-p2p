@@ -9,7 +9,6 @@ export default class TupleSpace {
     this.callbacks = [];
     this.network = network;
     this.network.observe(this._put);
-    network.connectToPeers();
   }
 
   get(template) {

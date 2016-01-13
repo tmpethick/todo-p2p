@@ -61,7 +61,7 @@ export default class Network {
     }
   }
 
-  connectToPeers() {
+  join() {
     // TODO: do actually connect..
     this.peer.listAllPeers((peers) => {
       console.log(peers)
