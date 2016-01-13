@@ -80,7 +80,9 @@ export default class Network {
 						conn.send(conn.metadata.message);
 					});
 					
-					conn.on('error', function(err) { alert(err); });
+					conn.on('error', (err) => {
+						this.removeOfflinePeer();
+					});
 					
 					this.connectedPeers[peer] = conn;
 				}
@@ -105,10 +107,20 @@ export default class Network {
 			conn.send(conn.metadata.message);
 		});
 		
-		conn.on('error', function(err) { alert(err); });
+		conn.on('error', (err) => { 
+			this.removeOfflinePeer(err, conn.peer);
+		});
 		
 		this.connectedPeers[peer] = conn;
 		
+  }
+  
+	removeOfflinePeer(err, offlinePeer) {
+		console.log(err);
+		delete this.connectedPeers[offlinePeer];
+		console.log("Deleted: " + offlinePeer);
+		console.log("The rest:");
+		this.listAllConnectedPeers();
   }
   
    getUserID() {
