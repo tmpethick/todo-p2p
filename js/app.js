@@ -12,7 +12,7 @@ export default class App extends React.Component {
     super();
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
-		this.network = props.network;
+    this.network = props.network;
   }
 
   componentDidMount() {
@@ -64,9 +64,9 @@ export default class App extends React.Component {
   }
   
   getTodoItemFromNetwork() {
-	  var todoItem = this.network.getTodoItem();
-	  console.log("Returned " + todoItem.content + ", id: " + todoItem.id);
-	  
+    var todoItem = this.network.getTodoItem();
+    console.log("Returned " + todoItem.content + ", id: " + todoItem.id);
+    
     this.tupleSpace.put(TodoItemModel.create(todoItem).toTuple());
   }
 
@@ -127,7 +127,7 @@ class TodoItem extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-		this.setState({editTodoInput: nextProps.todo.data.content});
+    this.setState({editTodoInput: nextProps.todo.data.content});
   }
 
   handleInputChange(event) {
@@ -151,7 +151,7 @@ class TodoItem extends React.Component {
   }
   
   editCompleted(event) {
-  	const content = this.state.editTodoInput;
+    const content = this.state.editTodoInput;
     if (!content)
       return;
       
@@ -171,10 +171,10 @@ class TodoItem extends React.Component {
     this.props.network.sendTodo(newItem);
   }
   
-	focusEditField(event) {
-		if (this.props.todo.data.isBlocked)
-			return;
-		this.blockCompleted();
+  focusEditField(event) {
+    if (this.props.todo.data.isBlocked)
+      return;
+    this.blockCompleted();
     this.setState({editing: true});
     setTimeout(() => {
       ReactDOM.findDOMNode(this.refs.edit).focus();
@@ -189,11 +189,11 @@ class TodoItem extends React.Component {
   
   handleKeyDown(event) {
     if (event.keyCode == 13) {
-	    this.blurEditField();
+      this.blurEditField();
     }
   }
 
-	render() {
+  render() {
     const {isComplete, isRemoved, isBlocked, content} = this.props.todo.data;
     return (
       <li className={(this.state.editing ? 'editing' : '') + (isComplete ? " completed" : "")  + (isRemoved ? " removed" : "") + (isBlocked ? " blocked" : "")}>
@@ -204,16 +204,16 @@ class TodoItem extends React.Component {
             disabled={(isBlocked ? 'disabled' : '')} />
           <label onDoubleClick={this.focusEditField.bind(this)}>{content}</label>
           <button className="destroy" 
-    	      onClick={this.removeCompleted.bind(this)}
-						disabled={(isBlocked ? 'disabled' : '')} ></button>
+            onClick={this.removeCompleted.bind(this)}
+            disabled={(isBlocked ? 'disabled' : '')} ></button>
         </div>
         <input 
-        	className="edit" 
-        	value={this.state.editTodoInput} 
+          className="edit" 
+          value={this.state.editTodoInput} 
           onChange={this.handleInputChange.bind(this)} 
           onBlur={this.blurEditField.bind(this)} 
-					onKeyDown={this.handleKeyDown.bind(this)} 
-					ref="edit" />
+          onKeyDown={this.handleKeyDown.bind(this)} 
+          ref="edit" />
       </li>
     );
   }
