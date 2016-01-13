@@ -1,3 +1,4 @@
+import {getItem, setItem, removeItem} from './Store';
 
 export default class TupleSpace {
   static LOCAL_STORAGE_ID = 'tupleSpace';
@@ -30,6 +31,7 @@ export default class TupleSpace {
       this.data[tuple.id] = [];
     this.data[tuple.id].push(tuple);
 
+    tuple.timestamp
     this.callCallbacks();
   }
 
@@ -42,23 +44,17 @@ export default class TupleSpace {
   }
 
   load = () => {
-    if(typeof(Storage) === "undefined")
-      return;
-    const store = localStorage.getItem(TupleSpace.LOCAL_STORAGE_ID);
-    this.data = JSON.parse(store) || {};
+    const data = getItem(TupleSpace.LOCAL_STORAGE_ID);
+    if (data)
+      this.data = data;
   };
 
   save = () => {
-    if(typeof(Storage) === "undefined")
-      return;
-    localStorage.setItem(
-      TupleSpace.LOCAL_STORAGE_ID, 
-      JSON.stringify(this.data)
-    )
+    setItem(TupleSpace.LOCAL_STORAGE_ID, this.data);
   };
 
   reset() {
-    localStorage.removeItem(TupleSpace.LOCAL_STORAGE_ID);
+    removeItem(TupleSpace.LOCAL_STORAGE_ID);
     this.data = {};
     this.callCallbacks();
   }
