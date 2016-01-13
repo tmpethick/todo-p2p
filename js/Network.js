@@ -48,7 +48,10 @@ export default class Network {
       console.log('My peer ID is: ' + id)
       this.listAllConnectedPeers()
     })
+  }
 
+  isOnline() {
+    return true
   }
 
   listAllConnectedPeers() {

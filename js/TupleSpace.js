@@ -2,6 +2,7 @@ import {getItem, setItem, removeItem} from './Store';
 
 export default class TupleSpace {
   static LOCAL_STORAGE_ID = 'tupleSpace';
+  static TIMESTAMP_ID = 'lastOnlineTimestamp';
 
   constructor(network) {
     this.data = {};
@@ -32,7 +33,12 @@ export default class TupleSpace {
   _put = (tuple) => {
     if (!this.data[tuple.id])
       this.data[tuple.id] = [];
-    this.data[tuple.id].push(tuple);    
+    this.data[tuple.id].push(tuple);
+
+    // Save the most recent online activity
+    if (this.network.isOnline())
+      setItem(TupleSpace.TIMESTAMP_ID, tuple.timestamp);
+    
     this.callCallbacks();
   };
 
