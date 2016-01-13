@@ -12,12 +12,10 @@ export default class App extends React.Component {
     super();
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
-		this.network = props.network;
   }
 
   componentDidMount() {
     this.tupleSpace.observe(this.forceUpdate.bind(this));
-    this.network.observe(this.getTodoItemFromNetwork.bind(this));
   }
 
   sortTodoList() {
@@ -38,7 +36,7 @@ export default class App extends React.Component {
         <section className="todoapp">
           <header className="header">
             <h1>todos</h1>
-            <NewTodoInput tupleSpace={this.tupleSpace} network={this.network} />
+            <NewTodoInput tupleSpace={this.tupleSpace} />
           </header>
 
           <section className="main">
@@ -46,7 +44,7 @@ export default class App extends React.Component {
 
               {items.map(todo => (
                 <TodoItem tupleSpace={this.tupleSpace} 
-                  key={todo.data.id} todo={todo} network={this.network} />
+                  key={todo.data.id} todo={todo} />
               ))}
 
             </ul>
@@ -61,13 +59,6 @@ export default class App extends React.Component {
         </section>
        </div>
     );
-  }
-  
-  getTodoItemFromNetwork() {
-	  var todoItem = this.network.getTodoItem();
-	  console.log("Returned " + todoItem.content + ", id: " + todoItem.id);
-	  
-    this.tupleSpace.put(TodoItemModel.create(todoItem).toTuple());
   }
 
 }
@@ -92,8 +83,6 @@ class NewTodoInput extends React.Component {
     const todoItem = TodoItemModel.create({content: content});
 
     this.tupleSpace.put(todoItem.toTuple());
-    
-    this.props.network.sendTodo(todoItem.toTuple());
 
     this.setState({newTodoInput: ''});    
   }
@@ -127,7 +116,7 @@ class TodoItem extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-		this.setState({editTodoInput: nextProps.todo.data.content});
+    this.setState({editTodoInput: nextProps.todo.data.content});
   }
 
   handleInputChange(event) {
@@ -139,7 +128,6 @@ class TodoItem extends React.Component {
       isComplete: !this.props.todo.data.isComplete,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
-    this.props.network.sendTodo(newItem);
   }
   
   blockCompleted(event) {
@@ -147,11 +135,10 @@ class TodoItem extends React.Component {
       isBlocked: true,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
-    this.props.network.sendTodo(newItem);
   }
   
   editCompleted(event) {
-  	const content = this.state.editTodoInput;
+    const content = this.state.editTodoInput;
     if (!content)
       return;
       
@@ -160,7 +147,6 @@ class TodoItem extends React.Component {
       isBlocked: false,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
-    this.props.network.sendTodo(newItem);
   }
   
   removeCompleted(event) {
@@ -168,13 +154,12 @@ class TodoItem extends React.Component {
       isRemoved: true,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
-    this.props.network.sendTodo(newItem);
   }
   
-	focusEditField(event) {
-		if (this.props.todo.data.isBlocked)
-			return;
-		this.blockCompleted();
+  focusEditField(event) {
+    if (this.props.todo.data.isBlocked)
+      return;
+    this.blockCompleted();
     this.setState({editing: true});
     setTimeout(() => {
       ReactDOM.findDOMNode(this.refs.edit).focus();
@@ -189,11 +174,11 @@ class TodoItem extends React.Component {
   
   handleKeyDown(event) {
     if (event.keyCode == 13) {
-	    this.blurEditField();
+      this.blurEditField();
     }
   }
 
-	render() {
+  render() {
     const {isComplete, isRemoved, isBlocked, content} = this.props.todo.data;
     return (
       <li className={(this.state.editing ? 'editing' : '') + (isComplete ? " completed" : "")  + (isRemoved ? " removed" : "") + (isBlocked ? " blocked" : "")}>
@@ -204,25 +189,24 @@ class TodoItem extends React.Component {
             disabled={(isBlocked ? 'disabled' : '')} />
           <label onDoubleClick={this.focusEditField.bind(this)}>{content}</label>
           <button className="destroy" 
-    	      onClick={this.removeCompleted.bind(this)}
-						disabled={(isBlocked ? 'disabled' : '')} ></button>
+            onClick={this.removeCompleted.bind(this)}
+            disabled={(isBlocked ? 'disabled' : '')} ></button>
         </div>
         <input 
-        	className="edit" 
-        	value={this.state.editTodoInput} 
+          className="edit" 
+          value={this.state.editTodoInput} 
           onChange={this.handleInputChange.bind(this)} 
           onBlur={this.blurEditField.bind(this)} 
-					onKeyDown={this.handleKeyDown.bind(this)} 
-					ref="edit" />
+          onKeyDown={this.handleKeyDown.bind(this)} 
+          ref="edit" />
       </li>
     );
   }
 }
 
 var network = new Network();
-network.connectToPeers();
 
-var tupleSpace = new TupleSpace();
+var tupleSpace = new TupleSpace(network);
 tupleSpace.load();
 window.onunload = tupleSpace.save;
 
@@ -230,6 +214,6 @@ window.onunload = tupleSpace.save;
 window.tupleSpace = tupleSpace;
 
 ReactDOM.render(
-  <App tupleSpace={tupleSpace} network={network} />, 
+  <App tupleSpace={tupleSpace} />, 
   document.getElementById('app')
 );

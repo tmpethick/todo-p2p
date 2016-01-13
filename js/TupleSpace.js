@@ -1,10 +1,15 @@
+import {getItem, setItem, removeItem} from './Store';
 
 export default class TupleSpace {
   static LOCAL_STORAGE_ID = 'tupleSpace';
+  static TIMESTAMP_ID = 'lastOnlineTimestamp';
 
-  constructor() {
+  constructor(network) {
     this.data = {};
     this.callbacks = [];
+    this.network = network;
+    this.network.observe(this._put);
+    network.connectToPeers();
   }
 
   get(template) {
@@ -41,12 +46,21 @@ export default class TupleSpace {
     return itemHistory.findIndex(entry => timestamp < entry.timestamp);
   }
 
-  put(tuple) {
+  _put = (tuple) => {
     if (!this.data[tuple.id])
       this.data[tuple.id] = [];
     this.data[tuple.id].push(tuple);
 
+    // Save the most recent online activity
+    if (this.network.isOnline())
+      setItem(TupleSpace.TIMESTAMP_ID, tuple.timestamp);
+    
     this.callCallbacks();
+  };
+
+  put(tuple) {
+    this._put(tuple);
+    this.network.sendTodo(tuple);
   }
 
   observe(callback) {
@@ -58,23 +72,17 @@ export default class TupleSpace {
   }
 
   load = () => {
-    if(typeof(Storage) === "undefined")
-      return;
-    const store = localStorage.getItem(TupleSpace.LOCAL_STORAGE_ID);
-    this.data = JSON.parse(store) || {};
+    const data = getItem(TupleSpace.LOCAL_STORAGE_ID);
+    if (data)
+      this.data = data;
   };
 
   save = () => {
-    if(typeof(Storage) === "undefined")
-      return;
-    localStorage.setItem(
-      TupleSpace.LOCAL_STORAGE_ID, 
-      JSON.stringify(this.data)
-    )
+    setItem(TupleSpace.LOCAL_STORAGE_ID, this.data);
   };
 
   reset() {
-    localStorage.removeItem(TupleSpace.LOCAL_STORAGE_ID);
+    removeItem(TupleSpace.LOCAL_STORAGE_ID);
     this.data = {};
     this.callCallbacks();
   }
