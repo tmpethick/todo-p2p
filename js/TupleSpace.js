@@ -25,6 +25,22 @@ export default class TupleSpace {
     });
   }
 
+  getSinceTime(timestamp) {
+    var data = {};
+
+    for (var key of Object.keys(this.data)) {
+      var itemHistory = this.data[key];
+      var index = this.findIndexOlderThan(itemHistory, timestamp);
+      data[key] = itemHistory.slice(index, itemHistory.length-1);
+    }
+    
+    return data;
+  }
+
+  findIndexOlderThan(itemHistory,timestamp) {
+    return itemHistory.findIndex(entry => timestamp < entry.timestamp);
+  }
+
   put(tuple) {
     if (!this.data[tuple.id])
       this.data[tuple.id] = [];
