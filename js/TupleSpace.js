@@ -3,9 +3,12 @@ import {getItem, setItem, removeItem} from './Store';
 export default class TupleSpace {
   static LOCAL_STORAGE_ID = 'tupleSpace';
 
-  constructor() {
+  constructor(network) {
     this.data = {};
     this.callbacks = [];
+    this.network = network;
+    this.network.observe(this._put);
+    network.connectToPeers();
   }
 
   get(template) {
@@ -26,13 +29,16 @@ export default class TupleSpace {
     });
   }
 
-  put(tuple) {
+  _put = (tuple) => {
     if (!this.data[tuple.id])
       this.data[tuple.id] = [];
-    this.data[tuple.id].push(tuple);
-
-    tuple.timestamp
+    this.data[tuple.id].push(tuple);    
     this.callCallbacks();
+  };
+
+  put(tuple) {
+    this._put(tuple);
+    this.network.sendTodo(tuple);
   }
 
   observe(callback) {

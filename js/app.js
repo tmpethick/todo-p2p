@@ -12,12 +12,10 @@ export default class App extends React.Component {
     super();
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
-    this.network = props.network;
   }
 
   componentDidMount() {
     this.tupleSpace.observe(this.forceUpdate.bind(this));
-    this.network.observe(this.getTodoItemFromNetwork.bind(this));
   }
 
   sortTodoList() {
@@ -38,7 +36,7 @@ export default class App extends React.Component {
         <section className="todoapp">
           <header className="header">
             <h1>todos</h1>
-            <NewTodoInput tupleSpace={this.tupleSpace} network={this.network} />
+            <NewTodoInput tupleSpace={this.tupleSpace} />
           </header>
 
           <section className="main">
@@ -46,7 +44,7 @@ export default class App extends React.Component {
 
               {items.map(todo => (
                 <TodoItem tupleSpace={this.tupleSpace} 
-                  key={todo.data.id} todo={todo} network={this.network} />
+                  key={todo.data.id} todo={todo} />
               ))}
 
             </ul>
@@ -61,13 +59,6 @@ export default class App extends React.Component {
         </section>
        </div>
     );
-  }
-  
-  getTodoItemFromNetwork() {
-    var todoItem = this.network.getTodoItem();
-    console.log("Returned " + todoItem.content + ", id: " + todoItem.id);
-    
-    this.tupleSpace.put(TodoItemModel.create(todoItem).toTuple());
   }
 
 }
@@ -92,8 +83,6 @@ class NewTodoInput extends React.Component {
     const todoItem = TodoItemModel.create({content: content});
 
     this.tupleSpace.put(todoItem.toTuple());
-    
-    this.props.network.sendTodo(todoItem.toTuple());
 
     this.setState({newTodoInput: ''});    
   }
@@ -139,7 +128,6 @@ class TodoItem extends React.Component {
       isComplete: !this.props.todo.data.isComplete,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
-    this.props.network.sendTodo(newItem);
   }
   
   blockCompleted(event) {
@@ -147,7 +135,6 @@ class TodoItem extends React.Component {
       isBlocked: true,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
-    this.props.network.sendTodo(newItem);
   }
   
   editCompleted(event) {
@@ -160,7 +147,6 @@ class TodoItem extends React.Component {
       isBlocked: false,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
-    this.props.network.sendTodo(newItem);
   }
   
   removeCompleted(event) {
@@ -168,7 +154,6 @@ class TodoItem extends React.Component {
       isRemoved: true,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
-    this.props.network.sendTodo(newItem);
   }
   
   focusEditField(event) {
@@ -220,9 +205,8 @@ class TodoItem extends React.Component {
 }
 
 var network = new Network();
-network.connectToPeers();
 
-var tupleSpace = new TupleSpace();
+var tupleSpace = new TupleSpace(network);
 tupleSpace.load();
 window.onunload = tupleSpace.save;
 

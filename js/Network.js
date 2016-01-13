@@ -8,7 +8,6 @@ export default class Network {
 
     this.connectedPeers = {}
 
-    this.todoItem
     this.callbacks = []
 
     // Hvad der skal ske, når en opretter forbindelse i mellem to peers
@@ -17,9 +16,9 @@ export default class Network {
 
         if (conn.label == 'connected') {
           data.replace('"', '"')
-          this.todoItem = JSON.parse(data)
-          this.callCallbacks()
-          console.log('Todoitem ' + this.todoItem.content + ' recieved')
+          var todoItem = JSON.parse(data)
+          this.callCallbacks(todoItem)
+          console.log('Todoitem ' + todoItem.content + ' recieved')
         } else if (conn.label == 'connecting') {
           console.log('Peer trying to connect to you: ' + conn.peer)
           this.connectToPeer(conn.peer)
@@ -148,9 +147,9 @@ export default class Network {
     this.callbacks.push(callback)
   }
 
-  callCallbacks() {
+  callCallbacks(todoItem) {
     console.log('Size of callbacks: ' + this.callbacks.length)
-    this.callbacks.forEach(callback => callback())
+    this.callbacks.forEach(callback => callback(todoItem))
   }
 
 }
