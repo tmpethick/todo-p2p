@@ -214,6 +214,6 @@ window.onunload = tupleSpace.save;
 window.tupleSpace = tupleSpace;
 
 ReactDOM.render(
-  <App tupleSpace={tupleSpace} network={network} />, 
+  <App tupleSpace={tupleSpace} />, 
   document.getElementById('app')
 );
