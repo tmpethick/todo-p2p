@@ -121,7 +121,7 @@ class TodoItem extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      editing: false, 
+      editing: false,
       editTodoInput: props.todo.data.content
     };
   }
@@ -142,6 +142,13 @@ class TodoItem extends React.Component {
     this.props.network.sendTodo(newItem);
   }
   
+  blockCompleted(event) {
+    var newItem = this.props.todo.copy({
+      isBlocked: true,
+    }).toTuple();
+    this.props.tupleSpace.put(newItem);
+    this.props.network.sendTodo(newItem);
+  }
   
   editCompleted(event) {
   	const content = this.state.editTodoInput;
@@ -150,6 +157,7 @@ class TodoItem extends React.Component {
       
     var newItem = this.props.todo.copy({
       content: content,
+      isBlocked: false,
     }).toTuple();
     this.props.tupleSpace.put(newItem);
     this.props.network.sendTodo(newItem);
@@ -164,6 +172,9 @@ class TodoItem extends React.Component {
   }
   
 	focusEditField(event) {
+		if (this.props.todo.data.isBlocked)
+			return;
+		this.blockCompleted();
     this.setState({editing: true});
     setTimeout(() => {
       ReactDOM.findDOMNode(this.refs.edit).focus();
@@ -183,15 +194,18 @@ class TodoItem extends React.Component {
   }
 
 	render() {
-    const {isComplete, isRemoved, content} = this.props.todo.data;
+    const {isComplete, isRemoved, isBlocked, content} = this.props.todo.data;
     return (
-      <li className={(this.state.editing ? 'editing' : '') + (isComplete ? " completed" : "")  + (isRemoved ? " removed" : "")}>
+      <li className={(this.state.editing ? 'editing' : '') + (isComplete ? " completed" : "")  + (isRemoved ? " removed" : "") + (isBlocked ? " blocked" : "")}>
         <div className="view">
           <input className="toggle" type="checkbox"
             onChange={this.toggleCompleted.bind(this)} 
-            checked={isComplete} />
+            checked={isComplete} 
+            disabled={(this.state.editing ? 'disabled' : '')} />
           <label onDoubleClick={this.focusEditField.bind(this)}>{content}</label>
-          <button className="destroy" onClick={this.removeCompleted.bind(this)}></button>
+          <button className="destroy" 
+    	      onClick={this.removeCompleted.bind(this)}
+						disabled={(this.state.editing ? 'disabled' : '')} ></button>
         </div>
         <input 
         	className="edit" 

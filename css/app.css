@@ -21,3 +21,15 @@
 .todo-list .removed {
 	display: none;
 }
+
+.todo-list .blocked {
+	background-color: #f8f8f8;
+}
+
+.todo-list .editing.blocked {
+	background-color: transparent;
+}
+
+.todo-list .editing input {
+	
+}
