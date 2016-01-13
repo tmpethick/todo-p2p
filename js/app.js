@@ -201,11 +201,11 @@ class TodoItem extends React.Component {
           <input className="toggle" type="checkbox"
             onChange={this.toggleCompleted.bind(this)} 
             checked={isComplete} 
-            disabled={(this.state.editing ? 'disabled' : '')} />
+            disabled={(isBlocked ? 'disabled' : '')} />
           <label onDoubleClick={this.focusEditField.bind(this)}>{content}</label>
           <button className="destroy" 
     	      onClick={this.removeCompleted.bind(this)}
-						disabled={(this.state.editing ? 'disabled' : '')} ></button>
+						disabled={(isBlocked ? 'disabled' : '')} ></button>
         </div>
         <input 
         	className="edit" 
