@@ -8,7 +8,7 @@ export default class Network {
   constructor(userID) {
     this.checkIfOnline = setInterval(this.waitForConnection.bind(this), 1000);
 
-    this.uuid = "Sebastian"//UUID.create().toString();
+    this.uuid = UUID.create().toString();
     console.log("My id: " + this.uuid)
     this.peer = new Peer(this.uuid, {
       host: Network.host, 
@@ -59,7 +59,6 @@ export default class Network {
 
   waitForConnection() {
     console.log("Waiting for connection...")
-    this.join();
     if(this.isOnline()) {
       console.log("Welcome online")
       clearInterval(this.checkIfOnline);
