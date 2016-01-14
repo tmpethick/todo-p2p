@@ -2,7 +2,7 @@ import Peer from 'peerjs'
 import UUID from 'uuid-js'
 
 export default class Network {
-  static host = "localhost";
+  static host = "10.16.168.102";
   static port = 9000;
 
   constructor(userID) {
@@ -51,7 +51,6 @@ export default class Network {
       this.saveConnection(conn)
 
       conn.on('data', (data) => {
-        console.log(data)
         this.callMethod(data.method, data.data)
       })
 
@@ -82,8 +81,15 @@ export default class Network {
   }
 
   callMethod(methodName, data) {
+ 
+   	console.log("---- recieving ----");
+  	console.log(data);
+  	console.log(methodName);
+
     const method = this.methods[methodName]
     if (method)
-      method(data)
-  }
+      method(data);
+      
+	 	console.log("---- done recieving ----");
+	}
 }
