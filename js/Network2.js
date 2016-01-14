@@ -24,7 +24,7 @@ export default class Network {
       if (this.peer && !this.peer.destroyed) {
         this.peer.destroy()
       }
-    });
+    };
   }
   
   /**
