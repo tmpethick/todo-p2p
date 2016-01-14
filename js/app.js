@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom';
 import UUID from 'uuid-js';
 import TodoItemModel from './model/TodoItem';
 import TodoListModel from './model/TodoList';
-import {onUnload} from './utils/onUnload.js';
 
 export default class App extends React.Component {
 
