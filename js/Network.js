@@ -4,7 +4,7 @@ import UUID from 'uuid-js'
 export default class Network {
 
   constructor(userID) {
-    this.peer = new Peer(this.getUserID(), {host: '10.16.163.124', port: 9000, path: '/'})
+    this.peer = new Peer(this.getUserID(), {host: '10.16.168.102', port: 9000, path: '/'})
 
     this.connectedPeers = {}
 
@@ -52,17 +52,24 @@ export default class Network {
 
   isOnline() {
   	if(!this.peer.disconnected || navigator.onLine) {
-  		console.log("You are currently online");
-  		return true;
+  		var counter = 0;
+	    for (var key in this.connectedPeers) {
+	     	counter++;
+	    }
+  		console.log("Amount of connected peers: " + counter);
+  		if (counter > 1) {
+  			console.log("You are currently online");
+  			return true;
+  		}
   	}
   	console.log("You are currently offline");
     return false;
   }
 
   listAllConnectedPeers() {
-    //console.log('All connected peers:')
+    console.log('All connected peers:')
     for (var key in this.connectedPeers) {
-      console.log(key)
+      console.log(key);
     }
   }
 
