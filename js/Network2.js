@@ -1,5 +1,6 @@
 import Peer from 'peerjs'
 import UUID from 'uuid-js'
+import Promise from 'bluebird'
 
 export default class Network {
   static host = "10.16.163.9";
@@ -36,7 +37,7 @@ export default class Network {
       if (this.peer && !this.peer.destroyed) {
         this.peer.destroy()
       }
-    };
+    }
   }
   
   /**
@@ -80,8 +81,22 @@ export default class Network {
     
     this.saveConnection(conn)
 
+    /**
+     * @param {String}  data.method         method name
+     * @param {Object}  data.data           arguments to method
+     * @param  {uuid}   data.responseMethod a method name to call on the peer
+     *                                      with the response.
+     */
     conn.on('data', (data) => {
-      this.callMethod(data.method, data.data)
+      const res = this._callMethod(data.method, data.data, data.invokeOnce)
+
+      // Call oneUse method on peer with response
+      if (data.responseMethod) {
+        return Promise.all([res])
+          .then((result) => {
+            return this.invokePeerMethod(conn.peer, data.responseMethod, result[0], true)
+          })
+      }
     })
 
     conn.on('close', () => {
@@ -106,28 +121,61 @@ export default class Network {
     console.log("Tuple: " + data.id)
     console.log(data)
 
-    for (let id in this.connectedPeers) {
-        console.log("Reciever: " +  id)
-        this.invokePeerMethod(id, methodName, data)
-    }
+    const promises = Object.keys(this.connectedPeers).map((id) => {
+      console.log("Reciever: " +  id)
+      return this.invokePeerMethod(id, methodName, data)
+    })
     console.log("-- done sending --")
+
+    return Promise.all(promises)
   }
 
-  invokePeerMethod(peerId, methodName, data) {
-    if (this.connectedPeers.hasOwnProperty(peerId)) {
-      this.connectedPeers[peerId].send({method: methodName, data: data})
-    }
+  /**
+   * Call a `Network.methods` method on a peer.
+   * The peer method can return a response which will be returned on Promise.resolve.
+   * @param  {String} peerId          the uuid of the peer
+   * @param  {String} methodName      the name of the method
+   * @param  {Object} data            method arguments
+   * @param  {bool}   responseRequest if it's invoked to send back a response
+   * @return {Promise}
+   */ 
+  invokePeerMethod(peerId, methodName, data, responseRequest) {
+    return new Promise((resolve, reject) => {
+      if (!this.connectedPeers.hasOwnProperty(peerId)) {
+        reject()
+      }
+
+      let resId = responseRequest ? undefined : UUID.create().toString()
+
+      // TODO: delete if never called
+      this.createMethod(resId, resolve)
+      
+      this.connectedPeers[peerId].send({
+        method: methodName, 
+        data: data,
+        responseMethod: resId,
+        invokeOnce: responseRequest
+      })
+    })
   }
 
-  callMethod(methodName, data) {
+  _callMethod = (methodName, data, invokeOnce) => {
  
-   	console.log("---- recieving ----");
+   	console.log("---- recieving ----")
   	console.log(methodName);
+    console.log("---- done recieving ----")
 
     const method = this.methods[methodName]
-    if (method)
-      method(data);
+    if (method) {
+      // responseMethods are oneUse only and should be deleted.
+      if (invokeOnce)
+        delete this.methods[methodName]
+
+      return method(data);
+    } else {
+      console.err(`Network: method '${methodName}' does not exist`)
+      return Promise.reject()
+    }
       
-	 	console.log("---- done recieving ----");
-	}
+	};
 }

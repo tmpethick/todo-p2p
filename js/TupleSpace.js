@@ -10,8 +10,9 @@ export default class TupleSpace {
     this.network = network;
 
     this.network.createMethod('addTuple', this._put);
-    this.network.createMethod('sendTupleSpace', this._sendTupleSpace);
-    this.network.createMethod('mergeTupleSpace', this._mergeTupleSpace);
+    this.network.createMethod('requestTupleSpace', () => {
+      return this.data;
+    });
   }
 
   get(template) {
@@ -44,12 +45,9 @@ export default class TupleSpace {
     this.callCallbacks();
   };
 
-  _sendTupleSpace = (peerId) => {
-    this.network.invokePeerMethod(peerId, 'mergeTupleSpace', this.data);
-  };
-
   _mergeItemHistories(history1, history2) {
     // TODO: consider unique id per item
+    // (there is a benifit: dublicates wont occure as of now)
     let history = [];
 
     while (history1.length && history2.length) {
@@ -133,7 +131,8 @@ export default class TupleSpace {
 
   forceSync() {
     let peerId = Object.keys(this.network.connectedPeers)[0];
-    this.network.invokePeerMethod(peerId, 'sendTupleSpace', this.network.peer.id)
+    let promise = this.network.invokePeerMethod(peerId, 'requestTupleSpace')
+    promise.then(this._mergeTupleSpace);
   }
 
 }
