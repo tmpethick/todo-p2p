@@ -7,8 +7,9 @@ export default class Network {
 
   constructor(userID) {
     this.checkIfOnline = setInterval(this.waitForConnection.bind(this), 1000);
+    this.tryToReconnect;
 
-    this.uuid = UUID.create().toString();
+    this.uuid = "Sebastian"//UUID.create().toString();
     console.log("My id: " + this.uuid)
     this.peer = new Peer(this.uuid, {
       host: Network.host, 
@@ -19,6 +20,10 @@ export default class Network {
     this.methods = {}
 
     this.peer.on('connection', this.initConnection)
+
+    this.peer.on('disconnect', () => {
+   	 this.tryToReconnect = setInterval(this.waitForReconnection.bind(this), 1000);
+    })
 
     window.onunload = e => {
       if (this.peer && !this.peer.destroyed) {
@@ -41,25 +46,25 @@ export default class Network {
   }
 
   isOnline() {
-    var amount = Object.keys(this.connectedPeers).length
-    if(!this.peer.disconnected || navigator.onLine) {
-      console.log("Amount of connected peers: " + amount);
-      if (amount > 0) {
-        console.log("You are currently online");
-        return true;
-      }
-    }
-    console.log("You are currently offline");
-    return false;
+    return Object.keys(this.connectedPeers).length > 0;
   }
 
   waitForConnection() {
-    console.log("Come right on in!")
+    console.log("Waiting for connection...")
     if(this.isOnline()) {
-      console.log("Hello there!")
+      console.log("Welcome online")
       clearInterval(this.checkIfOnline);
     }
   }
+
+	waitForReconnection() {
+		console.log("Trying to reconnect");
+		this.join();
+		if (this.isOnline()) {
+      console.log("Connected")
+			clearInterval(tryToReconnect);
+		}
+	}
 
   connectToPeer(peer) {
     let conn = this.peer.connect(peer, {

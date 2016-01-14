@@ -6,10 +6,8 @@ export const getItem = function (key) {
 }
 
 export const setItem = function (key, value) {
-  console.log("!!")
   if (typeof (Storage) === 'undefined')
     return
-  console.log("!!")
   localStorage.setItem(key, JSON.stringify(value))
 }
 
