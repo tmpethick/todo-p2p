@@ -22,7 +22,7 @@ export default class Network {
 
     window.onunload = e => {
       if (this.peer && !this.peer.destroyed) {
-        peer.destroy()
+        this.peer.destroy()
       }
     });
   }
