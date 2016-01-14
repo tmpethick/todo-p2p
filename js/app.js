@@ -24,7 +24,6 @@ export default class App extends React.Component {
       (a, b) =>  b.data.creationDate - a.data.creationDate);
   }
 
-
   clearLocalStorage = (event) => {
     this.tupleSpace.reset();
     event.preventDefault();

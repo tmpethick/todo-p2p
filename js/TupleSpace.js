@@ -51,15 +51,14 @@ export default class TupleSpace {
       this.data[tuple.id] = [];
     this.data[tuple.id].push(tuple);
 
-    // Save the most recent online activity
-    //if (this.network.isOnline())
-    //  setItem(TupleSpace.TIMESTAMP_ID, tuple.timestamp);
+    if (this.network.isOnline()) {
+      setItem(this.TIMESTAMP_ID, tuple.timestamp);
+    }
     
     this.callCallbacks();
   };
 
   put(tuple) {
-    console.log("Am I online? " + this.network.isOnline());
     this._put(tuple);
     this.network.requestMethodCall('addTuple', tuple);
   }

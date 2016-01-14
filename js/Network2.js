@@ -6,6 +6,8 @@ export default class Network {
   static port = 9000;
 
   constructor(userID) {
+    this.checkIfOnline = setInterval(this.waitForConnection.bind(this), 1000);
+
     this.uuid = UUID.create().toString();
     console.log("My id:")
     console.log(this.uuid)
@@ -47,13 +49,21 @@ export default class Network {
         counter++;
       }
       console.log("Amount of connected peers: " + counter);
-      if (counter > 1) {
+      if (counter > 0) {
         console.log("You are currently online");
         return true;
       }
     }
     console.log("You are currently offline");
     return false;
+  }
+
+  waitForConnection() {
+    console.log("Come right on in!")
+    if(this.isOnline()) {
+      console.log("Hello there!")
+      clearInterval(this.checkIfOnline);
+    }
   }
 
   connectToPeer(peer) {
