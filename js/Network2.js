@@ -3,10 +3,12 @@ import UUID from 'uuid-js'
 import {onUnload} from './utils/onUnload.js';
 
 export default class Network {
-  static host = "localhost";
+  static host = "10.16.168.102";
   static port = 9000;
 
   constructor(userID) {
+    this.checkIfOnline = setInterval(this.waitForConnection.bind(this), 1000);
+
     this.uuid = UUID.create().toString();
     console.log("My id: " + this.uuid)
     this.peer = new Peer(this.uuid, {
@@ -40,19 +42,24 @@ export default class Network {
   }
 
   isOnline() {
+    var amount = Object.keys(this.connectedPeers).length
     if(!this.peer.disconnected || navigator.onLine) {
-      var counter = 0;
-      for (var key in this.connectedPeers) {
-        counter++;
-      }
-      console.log("Amount of connected peers: " + counter);
-      if (counter > 1) {
+      console.log("Amount of connected peers: " + amount);
+      if (amount > 0) {
         console.log("You are currently online");
         return true;
       }
     }
     console.log("You are currently offline");
     return false;
+  }
+
+  waitForConnection() {
+    console.log("Come right on in!")
+    if(this.isOnline()) {
+      console.log("Hello there!")
+      clearInterval(this.checkIfOnline);
+    }
   }
 
   connectToPeer(peer) {
