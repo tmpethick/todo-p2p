@@ -10,6 +10,8 @@ export default class TupleSpace {
     this.network = network;
 
     this.network.createMethod('addTuple', this._put);
+    this.network.createMethod('sendTupleSpace', this._sendTupleSpace);
+    this.network.createMethod('mergeTupleSpace', this._mergeTupleSpace);
   }
 
   get(template) {
@@ -28,6 +30,48 @@ export default class TupleSpace {
       let item = this.data[key];
       return item[item.length-1]
     });
+  }
+
+  _mergeTupleSpace = (tupleSpaceData) => {
+    for (let id in tupleSpaceData) {
+      if (!tupleSpaceData.hasOwnProperty(id))
+        continue
+      this.data[id] = this._mergeItemHistories(
+        this.data[id] || [], 
+        tupleSpaceData[id]
+      );
+    }
+    this.callCallbacks();
+  };
+
+  _sendTupleSpace = (peerId) => {
+    this.network.invokePeerMethod(peerId, 'mergeTupleSpace', this.data);
+  };
+
+  _mergeItemHistories(history1, history2) {
+    // TODO: consider unique id per item
+    let history = [];
+
+    while (history1.length && history2.length) {
+      const t1 = history1[0].timestamp;
+      const t2 = history2[0].timestamp;
+
+      if (t1 < t2) {
+        history.push(history1.shift());
+      } else {
+        history.push(history2.shift());
+
+        if (t1 === t2)
+          history1.shift();
+      }
+    }
+
+    [history1, history2].forEach((h) => {
+      while (h.length)
+        history.push(h.shift());
+    })
+
+    return history;
   }
 
   getSinceTime(timestamp) {
@@ -61,7 +105,7 @@ export default class TupleSpace {
   put(tuple) {
 		this.network.isOnline();
     this._put(tuple);
-    this.network.requestMethodCall('addTuple', tuple);
+    this.network.invokeAllPeerMethods('addTuple', tuple);
   }
 
   observe(callback) {
@@ -86,6 +130,11 @@ export default class TupleSpace {
     removeItem(TupleSpace.LOCAL_STORAGE_ID);
     this.data = {};
     this.callCallbacks();
+  }
+
+  forceSync() {
+    let peerId = Object.keys(this.network.connectedPeers)[0];
+    this.network.invokePeerMethod(peerId, 'sendTupleSpace', this.network.peer.id)
   }
 
 }

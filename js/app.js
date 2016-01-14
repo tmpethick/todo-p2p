@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import UUID from 'uuid-js';
 import TodoItemModel from './model/TodoItem';
 import TodoListModel from './model/TodoList';
+import {onUnload} from './utils/onUnload.js';
 
 export default class App extends React.Component {
 
@@ -28,6 +29,11 @@ export default class App extends React.Component {
   clearLocalStorage = (event) => {
     this.tupleSpace.reset();
     event.preventDefault();
+  };
+
+  forceSync = (event) => {
+    this.tupleSpace.forceSync();
+    event.preventDefault();    
   };
 
   render() {
@@ -54,6 +60,9 @@ export default class App extends React.Component {
             <ul className="filters">
               <li>
                 <a href="#" onClick={this.clearLocalStorage}>Clear localStorage</a>
+              </li>
+              <li>
+                <a href="#" onClick={this.forceSync}>Force sync</a>
               </li>
             </ul>
           </footer>
