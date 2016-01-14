@@ -1,6 +1,5 @@
 import Peer from 'peerjs'
 import UUID from 'uuid-js'
-import {onUnload} from './utils/onUnload.js';
 
 export default class Network {
   static host = "10.16.168.102";
@@ -21,7 +20,7 @@ export default class Network {
 
     this.peer.on('connection', this.initConnection)
 
-    onUnload(e => {
+    window.onunload = e => {
       if (this.peer && !this.peer.destroyed) {
         peer.destroy()
       }
