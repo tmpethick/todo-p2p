@@ -51,11 +51,16 @@ export default class Network {
   }
 
   isOnline() {
-    return true
+  	if(!this.peer.disconnected || navigator.onLine) {
+  		console.log("You are currently online");
+  		return true;
+  	}
+  	console.log("You are currently offline");
+    return false;
   }
 
   listAllConnectedPeers() {
-    console.log('All connected peers:')
+    //console.log('All connected peers:')
     for (var key in this.connectedPeers) {
       console.log(key)
     }
