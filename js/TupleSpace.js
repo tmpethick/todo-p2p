@@ -9,7 +9,6 @@ export default class TupleSpace {
     this.callbacks = [];
     this.network = network;
     this.network.observe(this._put);
-    network.connectToPeers();
   }
 
   get(template) {
@@ -28,6 +27,22 @@ export default class TupleSpace {
       let item = this.data[key];
       return item[item.length-1]
     });
+  }
+
+  getSinceTime(timestamp) {
+    var data = {};
+
+    for (var key of Object.keys(this.data)) {
+      var itemHistory = this.data[key];
+      var index = this.findIndexOlderThan(itemHistory, timestamp);
+      data[key] = itemHistory.slice(index, itemHistory.length-1);
+    }
+    
+    return data;
+  }
+
+  findIndexOlderThan(itemHistory,timestamp) {
+    return itemHistory.findIndex(entry => timestamp < entry.timestamp);
   }
 
   _put = (tuple) => {
