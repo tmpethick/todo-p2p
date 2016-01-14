@@ -2,9 +2,16 @@ import Peer from 'peerjs'
 import UUID from 'uuid-js'
 
 export default class Network {
+  static host = "10.16.168.102";
+  static port = 9000;
 
   constructor(userID) {
-    this.peer = new Peer(this.getUserID(), {host: '10.16.168.102', port: 9000, path: '/'})
+    this.uuid = UUID.create().toString();
+    this.peer = new Peer(this.uuid, {
+      host: Network.host, 
+      port: Network.port, 
+      path: '/'
+    })
 
     this.connectedPeers = {}
 
@@ -21,12 +28,10 @@ export default class Network {
           console.log('Todoitem ' + todoItem.content + ' recieved')
         } else if (conn.label == 'connecting') {
           console.log('Peer trying to connect to you: ' + conn.peer)
-          this.connectToPeer(conn.peer)
-          this.listAllConnectedPeers()
+          this.connectToPeer(conn.peer, "")
           conn.label = 'connected'
         } else if (conn.label == 'backconnecting') {
           console.log('Peer has responded you: ' + conn.peer)
-          this.listAllConnectedPeers()
           console.log('Connection established')
           conn.label = 'connected'
         }
@@ -35,12 +40,15 @@ export default class Network {
 
     })
 
+    /*
     this.peer.on('disconnected', () => {
+      // fire when no internet (after `close`)
       console.log('You have been disconnected from the server')
     })
 
     this.peer.on('close', () => {
-      console.log('Your connection has been destroyed')
+      // fire when no internet
+      console.log('Your connection has been closed')
     })
 
     // Når en forbinder til serveren
@@ -48,6 +56,7 @@ export default class Network {
       console.log('My peer ID is: ' + id)
       this.listAllConnectedPeers()
     })
+    */
   }
 
   isOnline() {
@@ -66,42 +75,24 @@ export default class Network {
     return false;
   }
 
+  /*
   listAllConnectedPeers() {
     console.log('All connected peers:')
     for (var key in this.connectedPeers) {
       console.log(key);
     }
   }
+  */
 
+  /**
+   * Connect to peers
+   */
   join() {
-    // TODO: do actually connect..
     this.peer.listAllPeers((peers) => {
-      console.log(peers)
-
       peers.forEach((peer) => {
-
-        var conn
-
-        if (!(peer in this.connectedPeers) && peer != this.peer.id) {
-          conn = this.peer.connect(peer, {
-            label: 'connecting',
-            serialization: 'none',
-            metadata: {message: 'Hey you, lets make a todolist!'}
-          })
-
-          conn.on('open', function () {
-            conn.send(conn.metadata.message)
-          })
-
-          conn.on('error', (err) => {
-            this.removeOfflinePeer()
-          })
-
-          this.connectedPeers[peer] = conn
-        }
-
+        if (peer != this.peer.id)
+          this.connectToPeer(peer);
       })
-
     })
 
   }
@@ -111,12 +102,11 @@ export default class Network {
 
     conn = this.peer.connect(peer, {
       label: 'backconnecting',
-      serialization: 'none',
-      metadata: {message: 'Hey there, sounds like a plan!'}
+      serialization: 'none'
     })
 
     conn.on('open', function () {
-      conn.send(conn.metadata.message)
+      conn.send();
     })
 
     conn.on('error', (err) => {
@@ -132,9 +122,9 @@ export default class Network {
     delete this.connectedPeers[offlinePeer]
     console.log('Deleted: ' + offlinePeer)
     console.log('The rest:')
-    this.listAllConnectedPeers()
   }
 
+  /*
   getUserID() {
     if (typeof (Storage) !== 'undefined') {
       if (!localStorage.uuid) {
@@ -144,7 +134,7 @@ export default class Network {
     } else {
       console.log('Sorry, your browser does not support web storage...')
     }
-  }
+  }*/
 
   sendTodo(todoItem) {
     var jsonString = JSON.stringify(todoItem)

@@ -1,4 +1,4 @@
-import Network from './Network';
+import Network from './Network2';
 import TupleSpace from "./TupleSpace";
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -17,7 +17,6 @@ export default class App extends React.Component {
   componentDidMount() {
     this.tupleSpace.observe(this.forceUpdate.bind(this));
     this.props.onReady();
-    console.log("!!!!!!");
   }
 
   sortTodoList() {

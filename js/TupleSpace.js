@@ -8,7 +8,8 @@ export default class TupleSpace {
     this.data = {};
     this.callbacks = [];
     this.network = network;
-    this.network.observe(this._put);
+
+    this.network.createMethod('addTuple', this._put);
   }
 
   get(template) {
@@ -51,15 +52,15 @@ export default class TupleSpace {
     this.data[tuple.id].push(tuple);
 
     // Save the most recent online activity
-    if (this.network.isOnline())
-      setItem(TupleSpace.TIMESTAMP_ID, tuple.timestamp);
+    //if (this.network.isOnline())
+    //  setItem(TupleSpace.TIMESTAMP_ID, tuple.timestamp);
     
     this.callCallbacks();
   };
 
   put(tuple) {
     this._put(tuple);
-    this.network.sendTodo(tuple);
+    this.network.requestMethodCall('addTuple', tuple);
   }
 
   observe(callback) {

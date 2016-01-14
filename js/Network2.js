@@ -1,0 +1,89 @@
+import Peer from 'peerjs'
+import UUID from 'uuid-js'
+
+export default class Network {
+  static host = "localhost";
+  static port = 9000;
+
+  constructor(userID) {
+    this.uuid = UUID.create().toString();
+    console.log("My id:")
+    console.log(this.uuid)
+    this.peer = new Peer(this.uuid, {
+      host: Network.host, 
+      port: Network.port, 
+      path: '/'
+    })
+    this.connectedPeers = {}
+    window.c = this.connectedPeers
+    this.methods = {}
+
+    this.peer.on('connection', this.initConnection)
+
+    window.onunload = window.onbeforeunload = function(e) {
+      if (this.peer && !this.peer.destroyed) {
+        peer.destroy()
+      }
+    }
+  }
+  
+  /**
+   * Connect to peers
+   */
+  join() {
+    this.peer.listAllPeers((peers) => {
+      peers.forEach((peer) => {
+        if (peer != this.peer.id)
+          this.connectToPeer(peer);
+      })
+    })
+
+  }
+
+  connectToPeer(peer) {
+    let conn = this.peer.connect(peer, {
+      serialization: 'json'
+    })
+    this.initConnection(conn)
+  }
+
+  initConnection = (conn) => {
+      this.saveConnection(conn)
+
+      conn.on('data', (data) => {
+        console.log(data)
+        this.callMethod(data.method, data.data)
+      })
+
+      conn.on('close', () => {
+          delete this.connectedPeers[conn.peer]
+      })
+  };
+
+  saveConnection(conn) {
+    this.connectedPeers[conn.peer] = conn
+  }
+
+  createMethod(methodName, func) {
+    this.methods[methodName] = func
+  }
+
+  requestMethodCall(methodName, data) {
+    console.log("---- sending ----")
+    for (let id in this.connectedPeers) {
+      if (this.connectedPeers.hasOwnProperty(id)) {
+        console.log(id)
+        console.log(methodName)
+        console.log(data)
+        this.connectedPeers[id].send({method: methodName, data: data})
+      }
+    }
+    console.log("-- done sending --")
+  }
+
+  callMethod(methodName, data) {
+    const method = this.methods[methodName]
+    if (method)
+      method(data)
+  }
+}
