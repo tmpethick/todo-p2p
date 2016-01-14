@@ -15,7 +15,6 @@ export default class Network {
       path: '/'
     })
     this.connectedPeers = {}
-    window.c = this.connectedPeers
     this.methods = {}
 
     this.peer.on('connection', this.initConnection)
