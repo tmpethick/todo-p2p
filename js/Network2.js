@@ -8,8 +8,7 @@ export default class Network {
 
   constructor(userID) {
     this.uuid = UUID.create().toString();
-    console.log("My id:")
-    console.log(this.uuid)
+    console.log("My id: " + this.uuid)
     this.peer = new Peer(this.uuid, {
       host: Network.host, 
       port: Network.port, 
@@ -64,7 +63,7 @@ export default class Network {
   }
 
   initConnection = (conn) => {
-    console.log("Connecting to: ", conn.peer)
+    console.log("Connecting established to: ", conn.peer)
     this.saveConnection(conn)
 
     conn.on('data', (data) => {
@@ -72,7 +71,11 @@ export default class Network {
     })
 
     conn.on('close', () => {
-        delete this.connectedPeers[conn.peer]
+    	console.log("Connection lost to: ", conn.peer);
+			delete this.connectedPeers[conn.peer]
+			if (Object.keys(this.connectedPeers).length === 0) {
+				this.checkIfOnline = setInterval(waitForConnection.bind(this), 1000);
+			}
     })
   };
 
