@@ -2,7 +2,7 @@ import Peer from 'peerjs'
 import UUID from 'uuid-js'
 
 export default class Network {
-  static host = "localhost";
+  static host = "10.16.168.102";
   static port = 9000;
 
   constructor(userID) {
@@ -38,6 +38,22 @@ export default class Network {
       })
     })
 
+  }
+
+  isOnline() {
+    if(!this.peer.disconnected || navigator.onLine) {
+      var counter = 0;
+      for (var key in this.connectedPeers) {
+        counter++;
+      }
+      console.log("Amount of connected peers: " + counter);
+      if (counter > 1) {
+        console.log("You are currently online");
+        return true;
+      }
+    }
+    console.log("You are currently offline");
+    return false;
   }
 
   connectToPeer(peer) {
