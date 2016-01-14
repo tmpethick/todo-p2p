@@ -81,7 +81,7 @@ export default class Network {
     	console.log("Connection lost to: ", conn.peer);
 			delete this.connectedPeers[conn.peer]
 			if (Object.keys(this.connectedPeers).length === 0) {
-				this.checkIfOnline = setInterval(waitForConnection.bind(this), 1000);
+				this.checkIfOnline = setInterval(this.waitForConnection.bind(this), 1000);
 			}
     })
   };
