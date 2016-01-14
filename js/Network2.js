@@ -1,8 +1,9 @@
 import Peer from 'peerjs'
 import UUID from 'uuid-js'
+import {onUnload} from './utils/onUnload.js';
 
 export default class Network {
-  static host = "10.16.168.102";
+  static host = "localhost";
   static port = 9000;
 
   constructor(userID) {
@@ -19,11 +20,11 @@ export default class Network {
 
     this.peer.on('connection', this.initConnection)
 
-    window.onunload = window.onbeforeunload = function(e) {
+    onUnload(e => {
       if (this.peer && !this.peer.destroyed) {
         peer.destroy()
       }
-    }
+    });
   }
   
   /**
@@ -63,15 +64,16 @@ export default class Network {
   }
 
   initConnection = (conn) => {
-      this.saveConnection(conn)
+    console.log("Connecting to: ", conn.peer)
+    this.saveConnection(conn)
 
-      conn.on('data', (data) => {
-        this.callMethod(data.method, data.data)
-      })
+    conn.on('data', (data) => {
+      this.callMethod(data.method, data.data)
+    })
 
-      conn.on('close', () => {
-          delete this.connectedPeers[conn.peer]
-      })
+    conn.on('close', () => {
+        delete this.connectedPeers[conn.peer]
+    })
   };
 
   saveConnection(conn) {
@@ -82,24 +84,27 @@ export default class Network {
     this.methods[methodName] = func
   }
 
-  requestMethodCall(methodName, data) {
+  invokeAllPeerMethods(methodName, data) {
     console.log("---- sending ----")
     console.log("Tuple: " + data.id)
     console.log(data)
 
     for (let id in this.connectedPeers) {
-      if (this.connectedPeers.hasOwnProperty(id)) {
         console.log("Reciever: " +  id)
-        this.connectedPeers[id].send({method: methodName, data: data})
-      }
+        this.invokePeerMethod(id, methodName, data)
     }
     console.log("-- done sending --")
+  }
+
+  invokePeerMethod(peerId, methodName, data) {
+    if (this.connectedPeers.hasOwnProperty(peerId)) {
+      this.connectedPeers[peerId].send({method: methodName, data: data})
+    }
   }
 
   callMethod(methodName, data) {
  
    	console.log("---- recieving ----");
-  	console.log("Tuple :" + data.id);
   	console.log(methodName);
 
     const method = this.methods[methodName]
