@@ -59,7 +59,7 @@ export default class TupleSpace {
   };
 
   put(tuple) {
-    console.log("Am I online? " + this.network.isOnline());
+		this.network.isOnline();
     this._put(tuple);
     this.network.requestMethodCall('addTuple', tuple);
   }

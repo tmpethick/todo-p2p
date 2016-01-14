@@ -85,11 +85,12 @@ export default class Network {
 
   requestMethodCall(methodName, data) {
     console.log("---- sending ----")
+    console.log("Tuple: " + data.id)
+    console.log(data)
+
     for (let id in this.connectedPeers) {
       if (this.connectedPeers.hasOwnProperty(id)) {
-        console.log(id)
-        console.log(methodName)
-        console.log(data)
+        console.log("Reciever: " +  id)
         this.connectedPeers[id].send({method: methodName, data: data})
       }
     }
@@ -99,7 +100,7 @@ export default class Network {
   callMethod(methodName, data) {
  
    	console.log("---- recieving ----");
-  	console.log(data);
+  	console.log("Tuple :" + data.id);
   	console.log(methodName);
 
     const method = this.methods[methodName]
