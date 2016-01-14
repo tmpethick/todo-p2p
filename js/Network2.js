@@ -2,12 +2,11 @@ import Peer from 'peerjs'
 import UUID from 'uuid-js'
 
 export default class Network {
-  static host = "10.16.168.102";
+  static host = "10.16.163.9";
   static port = 9000;
 
   constructor(userID) {
     this.checkIfOnline = setInterval(this.waitForConnection.bind(this), 1000);
-    this.tryToReconnect;
 
     this.uuid = "Sebastian"//UUID.create().toString();
     console.log("My id: " + this.uuid)
@@ -20,6 +19,18 @@ export default class Network {
     this.methods = {}
 
     this.peer.on('connection', this.initConnection)
+
+		this.peer.on("open", () => {
+			console.log("open");
+		})
+
+		this.peer.on("close", () => {
+			console.log("closed");
+		})
+		
+		this.peer.on("disconnected", () => {
+			console.log("disconnected");
+		})
 
     window.onunload = e => {
       if (this.peer && !this.peer.destroyed) {
@@ -34,8 +45,9 @@ export default class Network {
   join() {
     this.peer.listAllPeers((peers) => {
       peers.forEach((peer) => {
-        if (peer != this.peer.id)
+        if (peer != this.peer.id && !this.connectedPeers.hasOwnProperty(peer)) {
           this.connectToPeer(peer);
+        }
       })
     })
 
@@ -54,15 +66,6 @@ export default class Network {
     }
   }
 
-	waitForReconnection() {
-		console.log("Trying to reconnect");
-		this.join();
-		if (this.isOnline()) {
-      console.log("Connected")
-			clearInterval(tryToReconnect);
-		}
-	}
-
   connectToPeer(peer) {
     let conn = this.peer.connect(peer, {
       serialization: 'json'
@@ -71,7 +74,11 @@ export default class Network {
   }
 
   initConnection = (conn) => {
-    console.log("Connecting established to: ", conn.peer)
+    
+    conn.on('open', () => {
+	    console.log("Connecting established to: ", conn.peer)
+    })
+    
     this.saveConnection(conn)
 
     conn.on('data', (data) => {
