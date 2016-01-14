@@ -21,10 +21,6 @@ export default class Network {
 
     this.peer.on('connection', this.initConnection)
 
-    this.peer.on('disconnect', () => {
-   	 this.tryToReconnect = setInterval(this.waitForReconnection.bind(this), 1000);
-    })
-
     window.onunload = e => {
       if (this.peer && !this.peer.destroyed) {
         this.peer.destroy()
@@ -51,6 +47,7 @@ export default class Network {
 
   waitForConnection() {
     console.log("Waiting for connection...")
+    this.join();
     if(this.isOnline()) {
       console.log("Welcome online")
       clearInterval(this.checkIfOnline);
