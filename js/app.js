@@ -12,10 +12,13 @@ export default class App extends React.Component {
     super();
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
+    this.state = {networkState: 'online'};
   }
 
   componentDidMount() {
     this.tupleSpace.observe(this.forceUpdate.bind(this));
+    window.addEventListener('offline',() => {this.setState({networkState: 'offline'});console.log('offline')},false);
+    window.addEventListener('online',() => {this.setState({networkState: 'online'});console.log('online')},false);
     this.props.onReady();
   }
 
@@ -33,6 +36,7 @@ export default class App extends React.Component {
     this.tupleSpace.forceSync();
     event.preventDefault();    
   };
+
 
   render() {
     var items = this.sortTodoList();
@@ -61,6 +65,9 @@ export default class App extends React.Component {
               </li>
               <li>
                 <a href="#" onClick={this.forceSync}>Force sync</a>
+              </li>
+              <li>
+                {(this.state.networkState === 'offline') ? <a href="#" onClick={location.reload.bind(location)}>Refresh</a> : ''}
               </li>
             </ul>
           </footer>
