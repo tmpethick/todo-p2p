@@ -3,7 +3,7 @@ import UUID from 'uuid-js'
 import Promise from 'bluebird'
 
 export default class Network {
-  static host = "localhost";
+  static host = "10.16.175.246";
   static port = 9000;
 
   constructor(userID) {

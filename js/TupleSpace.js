@@ -111,6 +111,12 @@ export default class TupleSpace {
     this.callbacks.push(callback);
   }
 
+  unobserve(callback) {
+    const index = this.callbacks.indexOf(callback);
+    if (index)
+      this.callbacks.splice(index, 1);
+  }
+
   callCallbacks() {
     this.callbacks.forEach(callback => callback());
   }

@@ -16,13 +16,18 @@ export default class App extends React.Component {
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
     this.state = {networkState: 'online'};
+    this.forceUpdate = this.forceUpdate.bind(this)
   }
 
   componentDidMount() {
-    this.tupleSpace.observe(this.forceUpdate.bind(this));
+    this.tupleSpace.observe(this.forceUpdate);
     window.addEventListener('offline',() => {this.setState({networkState: 'offline'});console.log('offline')},false);
     window.addEventListener('online',() => {this.setState({networkState: 'online'});console.log('online')},false);
     this.props.onReady();
+  }
+
+  componentWillUnmount() {
+    this.tupleSpace.unobserve(this.forceUpdate);
   }
 
   sortTodoList() {
@@ -34,12 +39,6 @@ export default class App extends React.Component {
     this.tupleSpace.reset();
     event.preventDefault();
   };
-
-  forceSync = (event) => {
-    this.tupleSpace.forceSync();
-    event.preventDefault();    
-  };
-
 
   render() {
     var items = this.sortTodoList();
