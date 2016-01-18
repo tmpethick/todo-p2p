@@ -1,5 +1,5 @@
 import React from 'react';
-import TodoListModel from './model/TodoList';
+import TodoListModel from '../model/TodoList';
 import NewTodoInput from './NewTodoInput.react';
 import TodoItem from './TodoItem.react';
 

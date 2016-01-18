@@ -1,5 +1,5 @@
 import React from 'react';
-import TodoItemModel from './model/TodoItem';
+import TodoItemModel from '../model/TodoItem';
 
 
 export default class NewTodoInput extends React.Component {

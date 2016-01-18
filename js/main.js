@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Promise from 'bluebird';
 import TupleSpace from "./TupleSpace";
-import Network from './Network2';
-import App from './App.react';
+import Network from './Network';
+import App from './components/App.react';
 
 
 Promise.longStackTraces();
