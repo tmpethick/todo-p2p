@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 export default class NetworkStatus extends React.Component {
   constructor(props) {
@@ -27,10 +28,17 @@ export default class NetworkStatus extends React.Component {
   };
 
   render() {
+    console.log(this.state.isOffline)
     return (
-      <li>
-        {this.state.isOffline ? <a href="#" onClick={location.reload.bind(location)}>Refresh</a> : ''}
-      </li>
+      <ReactCSSTransitionGroup transitionName="offline-button" 
+        transitionEnterTimeout={1000} 
+        transitionLeaveTimeout={1000}>
+        {this.state.isOffline ? (
+          <a key="offline" href="#" className="offline-button" onClick={location.reload.bind(location)}>
+            You were disconnected. Click to reload.
+          </a>
+        ) : <span key="online"/>}
+      </ReactCSSTransitionGroup>
     );
   }
 }

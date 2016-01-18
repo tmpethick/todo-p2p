@@ -33,3 +33,29 @@
 .todo-list .editing input {
 	
 }
+
+.offline-button {
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  
+  padding: 5px 20px 10px;
+  border-radius: 0 0 15px 15px;
+  
+  text-decoration: none;
+  color: white;
+  background-color: #E24141;
+
+  transform: translateX(-50%) translateY(0);
+  transition: transform 1s;
+}
+
+.offline-button-leave,
+.offline-button-enter {
+  transform: translateX(-50%) translateY(-100%);
+}
+
+.offline-button:hover {
+  background-color: #C33333;
+}

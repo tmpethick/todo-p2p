@@ -26,6 +26,7 @@ export default class App extends React.Component {
     var items = this.sortItems(this.todoList.getItems());
     return (
       <div>
+        <NetworkStatus/>
         <section className="todoapp">
           <header className="header">
             <h1>Todos</h1>
@@ -50,7 +51,6 @@ export default class App extends React.Component {
               <li>
                 <a href="#" onClick={this.forceSync}>Force sync</a>
               </li>
-              <NetworkStatus/>
             </ul>
           </footer>
         </section>
