@@ -3,11 +3,11 @@ import UUID from 'uuid-js'
 import Promise from 'bluebird'
 
 export default class Network {
-  static host = "10.16.163.9";
+  static host = "10.16.175.246";
   static port = 9000;
 
   constructor(userID) {
-    this.checkIfOnline = setInterval(this.waitForConnection.bind(this), 1000);
+    this.waitForPeerConnection();
 
     this.uuid = UUID.create().toString();
     console.log("My id: " + this.uuid)
@@ -21,17 +21,19 @@ export default class Network {
 
     this.peer.on('connection', this.initConnection)
 
-		this.peer.on("open", () => {
-			console.log("open");
-		})
+    this.peer.on("open", () => {
+      console.log("open");
+    })
+    this.peer.on("close", () => {
+      console.log("closed");
+    })
+    this.peer.on("disconnected", () => {
+      console.log("disconnected");
+    })
 
-		this.peer.on("close", () => {
-			console.log("closed");
-		})
-		
-		this.peer.on("disconnected", () => {
-			console.log("disconnected");
-		})
+    this.peer.on("error", (err) => {
+      console.log(err);
+    })
 
     window.onunload = e => {
       if (this.peer && !this.peer.destroyed) {
@@ -54,17 +56,26 @@ export default class Network {
 
   }
 
-  isOnline() {
+  isAlone() {
     return Object.keys(this.connectedPeers).length > 0;
   }
 
-  waitForConnection() {
-    console.log("Waiting for connection...")
-    if(this.isOnline()) {
-      console.log("Welcome online")
-      clearInterval(this.checkIfOnline);
+  waitForPeerConnection = () => {
+    // Don't start it if it's already running
+    if (this.aloneCheckIntervalId) {
+      return;
     }
-  }
+
+    const func = () => {
+      console.log("Waiting for connection...")
+      if(this.isAlone()) {
+        console.log("Welcome online")
+        clearInterval(this.aloneCheckIntervalId);
+        this.aloneCheckIntervalId = null;
+      }
+    };
+    this.aloneCheckIntervalId = setInterval(func, 1000);
+  };
 
   connectToPeer(peer) {
     let conn = this.peer.connect(peer, {
@@ -103,7 +114,7 @@ export default class Network {
     	console.log("Connection lost to: ", conn.peer);
 			delete this.connectedPeers[conn.peer]
 			if (Object.keys(this.connectedPeers).length === 0) {
-				this.checkIfOnline = setInterval(this.waitForConnection.bind(this), 1000);
+				this.waitForPeerConnection();
 			}
     })
   };

@@ -93,7 +93,7 @@ export default class TupleSpace {
       this.data[tuple.id] = [];
     this.data[tuple.id].push(tuple);
 
-    if (this.network.isOnline()) {
+    if (this.network.isAlone()) {
       setItem(this.TIMESTAMP_ID, tuple.timestamp);
     }
     
