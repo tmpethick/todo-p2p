@@ -40,7 +40,7 @@ export default class App extends React.Component {
        <div>
         <section className="todoapp">
           <header className="header">
-            <h1>todos</h1>
+            <h1>Todos</h1>
             <NewTodoInput tupleSpace={this.tupleSpace} />
           </header>
 
