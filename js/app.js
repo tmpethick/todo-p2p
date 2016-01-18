@@ -62,9 +62,6 @@ export default class App extends React.Component {
               <li>
                 <a href="#" onClick={this.clearLocalStorage}>Clear localStorage</a>
               </li>
-              <li>
-                <a href="#" onClick={this.forceSync}>Force sync</a>
-              </li>
             </ul>
           </footer>
         </section>
