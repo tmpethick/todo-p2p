@@ -17,14 +17,26 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.tupleSpace.observe(this.forceUpdate);
-    window.addEventListener('offline',() => {this.setState({networkState: 'offline'});console.log('offline')},false);
-    window.addEventListener('online',() => {this.setState({networkState: 'online'});console.log('online')},false);
+    window.addEventListener('offline', this.onOffline);
+    window.addEventListener('online', this.onOnline);
     this.props.onReady();
   }
 
   componentWillUnmount() {
     this.tupleSpace.unobserve(this.forceUpdate);
+    window.removeEventListener('offline', this.onOffline);
+    window.removeEventListener('online', this.onOnline);
   }
+
+  onOffline = () => {
+    this.setState({networkState: 'offline'});
+    console.log('offline')
+  };
+
+  onOnline = () => {
+    this.setState({networkState: 'online'});
+    console.log('online')
+  };
 
   sortTodoList() {
     return this.todoList.getItems().sort(
@@ -39,7 +51,7 @@ export default class App extends React.Component {
   render() {
     var items = this.sortTodoList();
     return (
-       <div>
+      <div>
         <section className="todoapp">
           <header className="header">
             <h1>Todos</h1>
@@ -70,7 +82,7 @@ export default class App extends React.Component {
             </ul>
           </footer>
         </section>
-       </div>
+      </div>
     );
   }
 
