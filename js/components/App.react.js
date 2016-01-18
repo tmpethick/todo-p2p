@@ -10,7 +10,8 @@ export default class App extends React.Component {
     super();
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
-    this.state = {networkState: 'online'};
+    this.state = {networkState: ''};
+    this.state.networkState = navigator.onLine ? 'online' : 'offline';
     this.forceUpdate = this.forceUpdate.bind(this)
   }
 
