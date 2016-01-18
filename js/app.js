@@ -5,6 +5,9 @@ import ReactDOM from 'react-dom';
 import UUID from 'uuid-js';
 import TodoItemModel from './model/TodoItem';
 import TodoListModel from './model/TodoList';
+import Promise from 'bluebird';
+
+Promise.longStackTraces();
 
 export default class App extends React.Component {
 
@@ -219,7 +222,7 @@ tupleSpace.load();
 window.onunload = tupleSpace.save;
 
 // Make sure network is only joined when interface is ready
-const start = () => network.join();
+const start = () => tupleSpace.join();
 
 // for testing
 window.tupleSpace = tupleSpace;

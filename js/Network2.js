@@ -3,7 +3,7 @@ import UUID from 'uuid-js'
 import Promise from 'bluebird'
 
 export default class Network {
-  static host = "10.16.175.246";
+  static host = "localhost";
   static port = 9000;
 
   constructor(userID) {
@@ -41,23 +41,22 @@ export default class Network {
       }
     }
   }
-  
+
   /**
    * Connect to peers
    */
   join() {
-    this.peer.listAllPeers((peers) => {
-      peers.forEach((peer) => {
-        if (peer != this.peer.id && !this.connectedPeers.hasOwnProperty(peer)) {
-          this.connectToPeer(peer);
-        }
+    return new Promise((resolve, reject) => {
+      this.peer.listAllPeers(peers => {
+        const promises = peers.filter(peer => (peer != this.peer.id))
+                              .map(peer => this.connectToPeer(peer))
+        Promise.all(promises).then(resolve)
       })
     })
-
   }
 
   isAlone() {
-    return Object.keys(this.connectedPeers).length > 0;
+    return !Object.keys(this.connectedPeers).length > 0;
   }
 
   waitForPeerConnection = () => {
@@ -68,8 +67,9 @@ export default class Network {
 
     const func = () => {
       console.log("Waiting for connection...")
-      if(this.isAlone()) {
+      if (!this.isAlone()) {
         console.log("Welcome online")
+
         clearInterval(this.aloneCheckIntervalId);
         this.aloneCheckIntervalId = null;
       }
@@ -81,41 +81,43 @@ export default class Network {
     let conn = this.peer.connect(peer, {
       serialization: 'json'
     })
-    this.initConnection(conn)
+    return this.initConnection(conn)
   }
 
   initConnection = (conn) => {
-    
-    conn.on('open', () => {
-	    console.log("Connecting established to: ", conn.peer)
-    })
-    
-    this.saveConnection(conn)
+    return new Promise((resolve, reject) => {
+      conn.on('open', () => {
+        console.log("Connecting established to: ", conn.peer)
+        resolve(conn)
+      })
+      
+      this.saveConnection(conn)
 
-    /**
-     * @param {String}  data.method         method name
-     * @param {Object}  data.data           arguments to method
-     * @param  {uuid}   data.responseMethod a method name to call on the peer
-     *                                      with the response.
-     */
-    conn.on('data', (data) => {
-      const res = this._callMethod(data.method, data.data, data.invokeOnce)
+      /**
+       * @param {String}  data.method         method name
+       * @param {Object}  data.data           arguments to method
+       * @param  {uuid}   data.responseMethod a method name to call on the peer
+       *                                      with the response.
+       */
+      conn.on('data', (data) => {
+        const res = this._callMethod(data.method, data.data, data.invokeOnce)
 
-      // Call oneUse method on peer with response
-      if (data.responseMethod) {
-        return Promise.all([res])
-          .then((result) => {
-            return this.invokePeerMethod(conn.peer, data.responseMethod, result[0], true)
-          })
-      }
-    })
+        // Call oneUse method on peer with response
+        if (data.responseMethod) {
+          return Promise.all([res])
+            .then((result) => {
+              return this.invokePeerMethod(conn.peer, data.responseMethod, result[0], true)
+            })
+        }
+      })
 
-    conn.on('close', () => {
-    	console.log("Connection lost to: ", conn.peer);
-			delete this.connectedPeers[conn.peer]
-			if (Object.keys(this.connectedPeers).length === 0) {
-				this.waitForPeerConnection();
-			}
+      conn.on('close', () => {
+        console.log("Connection lost to: ", conn.peer);
+        delete this.connectedPeers[conn.peer]
+        if (Object.keys(this.connectedPeers).length === 0) {
+          this.waitForPeerConnection();
+        }
+      })
     })
   };
 
@@ -129,7 +131,7 @@ export default class Network {
 
   invokeAllPeerMethods(methodName, data) {
     console.log("---- sending ----")
-    console.log("Tuple: " + data.id)
+    console.log("data: ")
     console.log(data)
 
     const promises = Object.keys(this.connectedPeers).map((id) => {

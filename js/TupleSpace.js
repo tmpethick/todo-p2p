@@ -10,7 +10,9 @@ export default class TupleSpace {
     this.network = network;
 
     this.network.createMethod('addTuple', this._put);
+    this.network.createMethod('mergeTupleSpace', this._mergeTupleSpace);
     this.network.createMethod('requestTupleSpace', () => {
+      console.log("[requestTupleSpace] called")
       return this.data;
     });
   }
@@ -93,7 +95,7 @@ export default class TupleSpace {
       this.data[tuple.id] = [];
     this.data[tuple.id].push(tuple);
 
-    if (this.network.isAlone()) {
+    if (!this.network.isAlone()) {
       setItem(this.TIMESTAMP_ID, tuple.timestamp);
     }
     
@@ -129,10 +131,16 @@ export default class TupleSpace {
     this.callCallbacks();
   }
 
-  forceSync() {
-    let peerId = Object.keys(this.network.connectedPeers)[0];
-    let promise = this.network.invokePeerMethod(peerId, 'requestTupleSpace')
-    promise.then(this._mergeTupleSpace);
+  join() {
+    this.network.join()
+      .then(connections => {
+        if (connections.length) {
+          this.network.invokeAllPeerMethods('mergeTupleSpace', this.data);
+          this.network.invokePeerMethod(connections[0].peer, 'requestTupleSpace')
+                      .then(this._mergeTupleSpace);
+        }
+        return true;
+      });
   }
 
 }
