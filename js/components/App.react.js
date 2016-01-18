@@ -38,9 +38,8 @@ export default class App extends React.Component {
     console.log('online')
   };
 
-  sortTodoList() {
-    return this.todoList.getItems().sort(
-      (a, b) =>  b.data.creationDate - a.data.creationDate);
+  sortItems(items) {
+    return items.sort((a, b) =>  b.data.creationDate - a.data.creationDate);
   }
 
   clearLocalStorage = (event) => {
@@ -49,7 +48,7 @@ export default class App extends React.Component {
   };
 
   render() {
-    var items = this.sortTodoList();
+    var items = this.sortItems(this.todoList.getItems());
     return (
       <div>
         <section className="todoapp">
