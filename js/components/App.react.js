@@ -2,7 +2,7 @@ import React from 'react';
 import TodoListModel from '../model/TodoList';
 import NewTodoInput from './NewTodoInput.react';
 import TodoItem from './TodoItem.react';
-
+import NetworkStatus from './NetworkStatus.react';
 
 export default class App extends React.Component {
 
@@ -10,33 +10,8 @@ export default class App extends React.Component {
     super();
     this.tupleSpace = props.tupleSpace;
     this.todoList = new TodoListModel({}, this.tupleSpace);
-    this.state = {networkState: ''};
-    this.state.networkState = navigator.onLine ? 'online' : 'offline';
     this.forceUpdate = this.forceUpdate.bind(this)
   }
-
-  componentDidMount() {
-    this.tupleSpace.observe(this.forceUpdate);
-    window.addEventListener('offline', this.onOffline);
-    window.addEventListener('online', this.onOnline);
-    this.props.onReady();
-  }
-
-  componentWillUnmount() {
-    this.tupleSpace.unobserve(this.forceUpdate);
-    window.removeEventListener('offline', this.onOffline);
-    window.removeEventListener('online', this.onOnline);
-  }
-
-  onOffline = () => {
-    this.setState({networkState: 'offline'});
-    console.log('offline')
-  };
-
-  onOnline = () => {
-    this.setState({networkState: 'online'});
-    console.log('online')
-  };
 
   sortItems(items) {
     return items.sort((a, b) =>  b.data.creationDate - a.data.creationDate);
@@ -75,9 +50,7 @@ export default class App extends React.Component {
               <li>
                 <a href="#" onClick={this.forceSync}>Force sync</a>
               </li>
-              <li>
-                {(this.state.networkState === 'offline') ? <a href="#" onClick={location.reload.bind(location)}>Refresh</a> : ''}
-              </li>
+              <NetworkStatus/>
             </ul>
           </footer>
         </section>
