@@ -2,10 +2,10 @@
   "name": "turtlespace",
   "version": "1.0.0",
   "description": "",
-  "main": "js/app.js",
+  "main": "js/main.js",
   "scripts": {
     "start": "parallelshell 'npm run server' 'npm run watch'",
-    "watch": "watchify -p livereactload -o build/bundle.js -v -d js/app.js",
+    "watch": "watchify -p livereactload -o build/bundle.js -v -d js/main.js",
     "server": "http-server -p 3000",
     "broker": "peerjs --port 9000 --key peerjs --allow_discovery",
     "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > build/bundle.min.js"
