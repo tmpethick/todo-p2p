@@ -13,6 +13,14 @@ export default class App extends React.Component {
     this.forceUpdate = this.forceUpdate.bind(this)
   }
 
+  componentDidMount() {
+    this.tupleSpace.observe(this.forceUpdate);
+  }
+
+  componentWillUnmount() {
+    this.tupleSpace.unobserve(this.forceUpdate);
+  }
+
   sortItems(items) {
     return items.sort((a, b) =>  b.data.creationDate - a.data.creationDate);
   }
