@@ -4,7 +4,8 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 export default class NetworkStatus extends React.Component {
   constructor(props) {
     super();
-    this.state = {isOffline: !navigator.onLine};
+    this.state = {isOffline: !navigator.onLine,
+                  reconnect : false};
   }
 
   componentDidMount() {
@@ -18,11 +19,13 @@ export default class NetworkStatus extends React.Component {
   }
 
   onOffline = () => {
+    this.state.reconnect = false;
     this.setState({isOffline: true});
     console.log('offline')
   };
 
   onOnline = () => {
+    this.state.isOffline ? this.state.reconnect = true : this.state.reconnect = false;
     this.setState({isOffline: false});
     console.log('online')
   };
@@ -30,15 +33,27 @@ export default class NetworkStatus extends React.Component {
   render() {
     console.log(this.state.isOffline)
     return (
-      <ReactCSSTransitionGroup transitionName="offline-button" 
-        transitionEnterTimeout={1000} 
-        transitionLeaveTimeout={1000}>
-        {this.state.isOffline ? (
-          <a key="offline" href="#" className="offline-button" onClick={location.reload.bind(location)}>
-            You were disconnected. Click to reload.
-          </a>
-        ) : <span key="online"/>}
-      </ReactCSSTransitionGroup>
+      <div>
+        <ReactCSSTransitionGroup transitionName="offline-button" 
+          transitionEnterTimeout={50}
+          transitionLeaveTimeout={1000}>
+          {this.state.isOffline ? (
+            <a key="offline" className="offline-button">
+              You were disconnected.
+            </a>
+          ) : <span key="online"/>}
+        </ReactCSSTransitionGroup>
+
+        <ReactCSSTransitionGroup transitionName="reconnect-button" 
+          transitionEnterTimeout={50}
+          transitionLeaveTimeout={1000}>
+          {this.state.reconnect ? (
+            <a key="reconnect" href="#" className="reconnect-button" onClick={location.reload.bind(location)}>
+              You’re online. Press to sync changes.
+            </a>
+          ) : <span key="online"/>}
+        </ReactCSSTransitionGroup>
+      </div>
     );
   }
 }
