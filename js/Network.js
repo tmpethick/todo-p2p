@@ -4,8 +4,10 @@ import Promise from 'bluebird'
 
 
 export default class Network {
-  static host = "localhost";
-  static port = process.env.PORT || 3000;
+  static host = process.env.NODE_ENV === "production" ? 
+                "todo.withbarehands.com" : "localhost";
+  static port = process.env.NODE_ENV === "production" ? 
+                process.env.DOKKU_NGINX_PORT : 3000;
 
   constructor(userID) {
     this.waitForPeerConnection();
