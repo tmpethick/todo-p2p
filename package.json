@@ -2,13 +2,13 @@
   "name": "turtlespace",
   "version": "1.0.0",
   "description": "",
-  "main": "js/main.js",
+  "main": "server.js",
   "scripts": {
-    "start": "parallelshell 'npm run server' 'npm run watch'",
+    "postinstall": "npm run build",
+    "dev": "parallelshell 'npm start' 'npm run watch'",
+    "start": "node server.js",
     "watch": "watchify -p livereactload -o build/bundle.js -v -d js/main.js",
-    "server": "http-server -p 3000",
-    "broker": "peerjs --port 9000 --key peerjs --allow_discovery",
-    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > build/bundle.min.js"
+    "build": "browserify js/main.js > build/bundle.js"
   },
   "browserify": {
     "transform": [
@@ -23,6 +23,7 @@
         }
       ],
       "envify"
+
     ]
   },
   "repository": {
@@ -42,7 +43,7 @@
     "babelify": "^7.2.0",
     "bluebird": "^3.1.1",
     "browserify": "^12.0.1",
-    "envify": "^3.4.0",
+    "express": "^4.13.3",
     "http-server": "^0.8.5",
     "peer": "^0.2.8",
     "peerjs": "^0.3.14",
@@ -52,8 +53,7 @@
     "todomvc-app-css": "^2.0.3",
     "todomvc-common": "^1.0.2",
     "uuid-js": "^0.7.5",
-    "watchify": "^3.6.1",
-    "yocto": "^0.1.0"
+    "watchify": "^3.6.1"
   },
   "devDependencies": {
     "babel-plugin-react-transform": "^2.0.0-beta1",

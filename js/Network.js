@@ -4,8 +4,8 @@ import Promise from 'bluebird'
 
 
 export default class Network {
-  static host = "10.16.175.246";
-  static port = 9000;
+  static host = "localhost";
+  static port = process.env.PORT || 3000;
 
   constructor(userID) {
     this.waitForPeerConnection();
@@ -15,7 +15,7 @@ export default class Network {
     this.peer = new Peer(this.uuid, {
       host: Network.host, 
       port: Network.port, 
-      path: '/'
+      path: '/peerjs'
     })
     this.connectedPeers = {}
     this.methods = {}
