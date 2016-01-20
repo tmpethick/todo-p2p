@@ -15,6 +15,7 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.tupleSpace.observe(this.forceUpdate);
+    this.props.onReady();
   }
 
   componentWillUnmount() {
