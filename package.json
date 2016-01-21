@@ -1,5 +1,6 @@
 {
-  "name": "turtlespace",
+  "name": "To-do",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
