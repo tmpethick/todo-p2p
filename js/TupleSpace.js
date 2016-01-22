@@ -34,6 +34,11 @@ export default class TupleSpace {
     });
   }
 
+  /**
+   * Merges with another tuple space.
+   * @param  {Object} tupleSpaceData A tuplespace conforming to the same 
+   *                                 format as `this.data`.
+   */
   _mergeTupleSpace = (tupleSpaceData) => {
     for (let id in tupleSpaceData) {
       if (!tupleSpaceData.hasOwnProperty(id))

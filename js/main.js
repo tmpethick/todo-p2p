@@ -5,7 +5,6 @@ import TupleSpace from "./TupleSpace";
 import Network from './Network';
 import App from './components/App.react';
 
-
 Promise.longStackTraces();
 
 var network = new Network();
